@@ -1,0 +1,112 @@
+@font-face { font-family: Rose; src: url('../fonts/SurrealismRose.ttf'); } 
+@font-face { font-family: Monaco; src: url('../fonts/Monaco.ttf'); } 
+@font-face { font-family: AmericanTypewriter; src: url('../fonts/AmericanTypewriter.ttc'); } 
+
+
+:root {
+    --background: rgb(210, 233, 237);
+    --primary: rgb(214, 72, 72);
+    --light-text: rgb(66, 66, 66);
+    font-family: Helvetica, sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    padding: 0;
+    margin: 0;
+}
+
+nav {
+    background-color: var(--primary);
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    flex: 1 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+nav a:hover {
+    background-color: hsl(from var(--primary) h s calc(l - 5));
+}
+
+header {
+    display: flex;
+    justify-content: center;
+}
+
+header h1 {
+    text-align: center;
+    font-size: xx-large;
+    margin: 40px;
+    padding: 40px;
+    border: 3px goldenrod solid;
+    border-radius: 15px;
+    width: fit-content;
+    background-color:  hsl(from var(--background) h s calc(l - 5));
+}
+
+main {
+    
+}
+
+img {
+    display: inline;
+}
+
+article {
+    margin: 50px 20%;
+}
+
+article h2 {
+    text-align: center;
+}
+
+article p {
+    line-height: 2em;
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
+
+article figure {
+    margin: 0;
+    text-align: center;
+    font-style: italic;
+    text-indent: 0;
+    color: var(--light-text);
+}
+
+article figure figcaption {
+    padding: 0.5em;
+}
+
+article figure img {
+    height: auto;
+    width: 100%;
+}
+
+.column {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: center;
+    
+}
+
+.column__half {
+    flex: 0.8 1 50%;
+}
+
+.block-text {
+    padding: 20px;
+    background-color:  hsl(from var(--background) h s calc(l - 5));
+    border-radius: 10px;
+
+}
