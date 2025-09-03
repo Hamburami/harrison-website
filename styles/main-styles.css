@@ -54,10 +54,6 @@ header h1 {
     background-color:  hsl(from var(--background) h s calc(l - 5));
 }
 
-main {
-    
-}
-
 img {
     display: inline;
 }
