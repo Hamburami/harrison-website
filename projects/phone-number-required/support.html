@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clearview Solutions Support</title>
+    <link rel="stylesheet" href="hebble.css">
+</head>
+<body>
+
+    <nav>
+        <a href="home.html">Home</a>
+        <a>Our Misson</a>
+        <a>Business Solutions</a>
+        <a>Get Started</a>
+    </nav>
+
+    <header class="support-head">
+        <h1>Support</h1>
+    </header>
+
+    <main id="support">
+
+        <section class="window chat">
+            <div class="chat__title">
+                <h2>Say hello to <b>ClearAI</b></h2>
+                <h3>Ask our new chat bot anything, he loves business.</h3>
+            </div>
+            <div class="chat__window">
+                <img src="images/calder-bot.gif" alt="Animated frames of eyes moving back and forth." width="96" height="auto">
+                <div class="chat__log">
+                </div>
+                <div class="chat__text">
+                    <input placeholder="Ask something..." id="chat-field">
+                    <button class="primary-btn" id="chat-btn">Ask</button>
+                </div> 
+            </div>
+
+        </section>
+
+
+        <section class="window faq">
+            <h2>FAQ</h2>
+            <ul>
+                <li class="faq__closed">
+                    <span class="faq__question"><h3>What is your misson?</h3><span class="faq__expand">+</span></span>
+                    <p>Our mission is simple, provide industry leading solutions for a competitive business world.</p>
+                </li>
+                <li class="faq__closed">
+                    <span class="faq__question"><h3>Where are you located?</h3><span class="faq__expand">+</span></span>
+                    <p>We have many physical locations around the world. Our headquaters however, resides fully in the cloud, along with our CEO, Marvin Dinglus.</p>
+                </li>
+                <li class="faq__closed">   
+                    <span class="faq__question"><h3>How do I start?</h3><span class="faq__expand">+</span></span>
+                    <p>Getting started with clearview is made easier than π! Simply use our single number signup system and jumpstart your bussiness today.</p>
+                </li>
+                <li class="faq__closed">    
+                    <span class="faq__question"><h3>What phone numbers do you accept?</h3><span class="faq__expand">+</span></span>
+                    <p>We any phone number from anywhere in the world! If you are having trouble signing up, one of our servers may be unavailable. Check our server status<a href="#server-list">here</a>.</p>
+                </li>
+                <li class="faq__closed">
+                    <span class="faq__question"><h3>Why is my Country's server unavailable?</h3><span class="faq__expand">+</span></span>
+                    <p>We take our customers access very seriously, which is why we try our absolute best to avoid closing any of them down. In some cases, however, we may need to temporarily pause service on a server due to political or weather concerns.</p>
+                </li>
+                <li class="faq__closed">    
+                    <span class="faq__question"><h3>How do I cancel?</h3><span class="faq__expand">+</span></span>
+                    <p>If you're feeling unsatisfied your Clearview service, we'd love to know why so we can better our team and your experience. Contact us at clearviewsolutions@business.gov</a>.</p>
+                </li>   
+            </ul>
+        </section>
+
+        <section class="window server-status" id="server-list">
+            <h2>Server Status</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Code</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>🇬🇧 UK</td>
+                    <td>+44</td>
+                    <td class="green">available</td>
+                </tr>
+                <tr>
+                    <td>🇩🇪 Germany</td>
+                    <td>+49</td>
+                    <td class="green">available</td>
+                </tr>
+                <tr>
+                    <td>🇧🇷 Brazil</td>
+                    <td>+55</td>
+                    <td class="green">available</td>
+                </tr>
+                <tr>
+                    <td>🇮🇹 Italy</td>
+                    <td>+39</td>
+                    <td class="green">available</td>
+                </tr>
+                <tr>
+                    <td>🇺🇸 Us</td>
+                    <td>+1</td>
+                    <td class="red">unavailable</td>
+                </tr>
+                    <tr>
+                    <td>🇧🇾 Belarus</td>
+                    <td>+375</td>
+                    <td class="red">unavailable</td>
+                </tr>
+            </table>
+            <div class="another-way">
+                <p><b>Server down in your region?</b><p>
+                <p class="tool-tip">Try our new business server maintenance tool</p>
+            </div>
+        </section>
+
+        <section class="tool-pop-up" id="pop-up1">
+            <div class="warning-header">
+                <span class="close-btn" id="close-btn1">x</span>
+                <h3>Warning!</h3>
+            </div>
+            <p>Our Business Server Maintenance Tool (BSMT) is an <em>experimental feature</em> never before offered to the public. Due to it's infancy, you may notice broken or unrelated content appear during use. If you'd like to continue, click <b>Login Info</b> and you will be given a username and a password. Please store this information before proceeding through our enterprise portal.</p>
+            <div class="btn-grp">
+                <button class="pop-btn" id="login-info-btn">Login Info</button>
+                <button class="pop-btn" id="portal-btn">Continue to Portal</button>
+            </div>
+        </section>
+        <section class="tool-pop-up login-pop-up" id="pop-up2">
+            <div class="normal-header">
+                <span class="close-btn" id="close-btn2">x</span>
+                <h3>Admin Credentials</h3>
+            </div>
+            <div class="login-text">
+                <p><span class="subtle">Username:</span><br> clearviewadmin</p>
+                <p><span class="subtle">Password:</span><br> gaxlyanblitz829</p>
+            </div>
+        </section>
+    </main> 
+
+    <!-- <section class="things">
+        <iframe src="p5/proccessing/proccess.html" width="300" height="300"></iframe>
+    </section> -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="support.js"></script>
+</body>
+</html>

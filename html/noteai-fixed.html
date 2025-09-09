@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteAI - Intelligent Note Taking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f4e4bc 0%, #e8d5a3 100%);
+            font-family: 'Georgia', serif;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+        }
+
+        .thoughts-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 24px,
+                    rgba(139, 115, 85, 0.1) 25px
+                );
+        }
+
+        .thought {
+            position: fixed;
+            background: transparent;
+            border: none;
+            font-family: 'Georgia', serif;
+            font-size: 1.2rem;
+            color: #2c1810;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: text;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        .thought:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .thought.current-thought {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(44, 24, 16, 0.2);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(1deg); }
+            50% { transform: translateY(-6px) rotate(0deg); }
+            75% { transform: translateY(-3px) rotate(-1deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mouse-blob {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background: rgba(44, 24, 16, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 3;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        /* SDF Ink blot canvas styles */
+        .ink-blot-canvas {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            z-index: 5;
+            pointer-events: auto;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            transition: filter 0.3s ease;
+        }
+
+        .ink-blot-canvas:hover {
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+        }
+
+        .ink-blot-canvas.menu-expanded {
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+        }
+
+        .menu-item {
+            border-radius: 50%;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #1a0f0a !important;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: scale(0.5); 
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+        }
+
+        /* Clear Button */
+        .clear-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(44, 24, 16, 0.1);
+            border: 2px solid rgba(44, 24, 16, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: rgba(44, 24, 16, 0.3);
+            transition: all 0.3s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .clear-button:hover {
+            background: #dc3545;
+            border-color: #c82333;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .clear-button:active {
+            transform: scale(0.95);
+        }
+
+        .ink-trail {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(44, 24, 16, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+            animation: fadeOut 2s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="thoughts-container" id="thoughtsContainer">
+        <!-- Thoughts will be typed here -->
+    </div>
+    
+    <div class="clear-button" id="clearButton">×</div>
+    <canvas class="ink-blot-canvas" id="inkBlotCanvas" width="150" height="150"></canvas>
+
+    <script src="../scripts/sdf-blot.js"></script>
+    <script src="../scripts/blot-animator.js"></script>
+    <script>
+        // Configuration
+        const CONFIG = {
+            blot: {
+                moveSpeed: 0.08,
+                approachDistance: 120,
+                patientDistance: 110,
+                menuRadius: 50,
+                smoothingFactor: 0.92
+            },
+            typing: {
+                mouseStillThreshold: 30,
+                storageKey: 'noteai-thoughts'
+            }
+        };
+
+        // Global state
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let appMode = 'new_thought';
+        let mouseBlob = null;
+        let currentThought = null;
+        let thoughts = [];
+        let blot = null;
+
+        // === THOUGHT CLASS ===
+        class Thought {
+            constructor(text, x, y) {
+                this.text = text;
+                this.x = x;
+                this.y = y;
+                this.element = this.createElement();
+                this.isActive = false;
+            }
+
+            createElement() {
+                const element = document.createElement('div');
+                element.className = 'thought';
+                element.style.left = this.x + 'px';
+                element.style.top = this.y + 'px';
+                element.textContent = this.text;
+                return element;
+            }
+
+            setActive(active) {
+                this.isActive = active;
+                if (active) {
+                    this.element.classList.add('current-thought');
+                } else {
+                    this.element.classList.remove('current-thought');
+                }
+            }
+
+            updateText(text) {
+                this.text = text;
+                this.element.textContent = text;
+            }
+
+            moveTo(x, y) {
+                this.x = x;
+                this.y = y;
+                this.element.style.left = x + 'px';
+                this.element.style.top = y + 'px';
+            }
+
+            format(type) {
+                switch (type) {
+                    case 'bold':
+                        this.element.style.fontWeight = 
+                            this.element.style.fontWeight === 'bold' ? 'normal' : 'bold';
+                        break;
+                    case 'italic':
+                        this.element.style.fontStyle = 
+                            this.element.style.fontStyle === 'italic' ? 'normal' : 'italic';
+                        break;
+                    case 'upper':
+                        this.text = this.text.toUpperCase();
+                        this.element.textContent = this.text;
+                        break;
+                    case 'lower':
+                        this.text = this.text.toLowerCase();
+                        this.element.textContent = this.text;
+                        break;
+                }
+            }
+
+            remove() {
+                this.element.remove();
+            }
+        }
+
+        // === ENHANCED BLOT CLASS WITH SDF RENDERING ===
+        class Blot {
+            constructor() {
+                this.canvas = document.getElementById('inkBlotCanvas');
+                this.sdfBlot = new SDFBlot(this.canvas, window.innerWidth / 2, window.innerHeight / 2);
+                this.animator = new BlotAnimator(this.sdfBlot);
+                this.menuExpanded = false;
+                this.isDragging = false;
+                this.isLocked = false;
+                this.lastUpdateTime = Date.now();
+                
+                this.menuItems = [
+                    { text: 'B', action: 'bold', angle: 0 },
+                    { text: 'I', action: 'italic', angle: 60 },
+                    { text: 'a', action: 'lower', angle: 120 },
+                    { text: 'A', action: 'upper', angle: 180 },
+                    { text: '↔', action: 'move', angle: 240 },
+                    { text: '×', action: 'delete', angle: 300 }
+                ];
+                
+                this.init();
+            }
+
+            init() {
+                this.canvas.addEventListener('mouseenter', () => {
+                    if (currentThought || thoughts.length > 0) {
+                        this.expandMenu();
+                    }
+                });
+                
+                this.canvas.addEventListener('mouseleave', (e) => {
+                    setTimeout(() => {
+                        if (!this.canvas.matches(':hover')) {
+                            this.collapseMenu();
+                        }
+                    }, 100);
+                });
+                
+                this.canvas.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.handleClick(e);
+                });
+                
+                this.startAnimation();
+            }
+
+            handleClick(e) {
+                if (!currentThought && thoughts.length > 0) {
+                    currentThought = thoughts[thoughts.length - 1];
+                    currentThought.setActive(true);
+                    appMode = 'current_thought';
+                    thoughtManager.updateMouseBlob();
+                    
+                    this.transitionToActiveState();
+                }
+                
+                if (!currentThought) return;
+
+                if (this.menuExpanded) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const clickX = e.clientX - centerX;
+                    const clickY = e.clientY - centerY;
+                    const distance = Math.sqrt(clickX * clickX + clickY * clickY);
+                    const angle = Math.atan2(clickY, clickX) * 180 / Math.PI;
+                    
+                    if (distance > 30 && distance < 60) {
+                        const normalizedAngle = ((angle + 360) % 360);
+                        const actionIndex = Math.floor((normalizedAngle + 30) / 60) % 6;
+                        this.executeAction(this.menuItems[actionIndex].action);
+                    }
+                }
+            }
+
+            expandMenu() {
+                this.menuExpanded = true;
+                this.canvas.classList.add('menu-expanded');
+                this.animator.transitionToState('menuExpanded', null, null, mouseX, mouseY);
+                this.renderMenuOverlay();
+            }
+
+            collapseMenu() {
+                this.menuExpanded = false;
+                this.canvas.classList.remove('menu-expanded');
+                const targetState = currentThought ? 'active' : 'idle';
+                this.animator.transitionToState(targetState, null, null, mouseX, mouseY);
+                this.clearMenuOverlay();
+            }
+
+            renderMenuOverlay() {
+                if (!this.menuOverlay) {
+                    this.menuOverlay = document.createElement('div');
+                    this.menuOverlay.style.position = 'fixed';
+                    this.menuOverlay.style.pointerEvents = 'none';
+                    this.menuOverlay.style.zIndex = '6';
+                    document.body.appendChild(this.menuOverlay);
+                }
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const radius = 40;
+                
+                let html = '';
+                this.menuItems.forEach((item, index) => {
+                    const angle = item.angle * Math.PI / 180;
+                    const x = centerX + radius * Math.cos(angle) - 12;
+                    const y = centerY + radius * Math.sin(angle) - 12;
+                    
+                    html += `<div class="menu-item" data-action="${item.action}" style="
+                        position: fixed;
+                        left: ${x}px;
+                        top: ${y}px;
+                        width: 24px;
+                        height: 24px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.9rem;
+                        font-weight: bold;
+                        color: white;
+                        background: rgba(44, 24, 16, 0.8);
+                        border-radius: 50%;
+                        cursor: pointer;
+                        pointer-events: auto;
+                        transition: all 0.2s ease;
+                        animation: fadeIn 0.3s ease ${index * 0.05}s both;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                    " onclick="blot.executeAction('${item.action}')">${item.text}</div>`;
+                });
+                
+                this.menuOverlay.innerHTML = html;
+            }
+
+            clearMenuOverlay() {
+                if (this.menuOverlay) {
+                    this.menuOverlay.innerHTML = '';
+                }
+            }
+
+            executeAction(action) {
+                if (action === 'move') {
+                    this.startDragMode();
+                } else if (action === 'delete') {
+                    this.deleteCurrentThought();
+                } else {
+                    this.formatCurrentThought(action);
+                }
+                this.collapseMenu();
+            }
+
+            startAnimation() {
+                const animate = () => {
+                    const currentTime = Date.now();
+                    const deltaTime = currentTime - this.lastUpdateTime;
+                    this.lastUpdateTime = currentTime;
+                    
+                    this.updateBehavior();
+                    this.sdfBlot.update(deltaTime);
+                    this.animator.update(deltaTime);
+                    this.sdfBlot.renderBlot();
+                    this.updateCanvasPosition();
+                    
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+
+            updateBehavior() {
+                if (currentThought && !this.isLocked && !this.animator.isMoving()) {
+                    const thoughtX = currentThought.x;
+                    const thoughtY = currentThought.y;
+                    
+                    const targetX = thoughtX - CONFIG.blot.patientDistance;
+                    const targetY = thoughtY;
+                    
+                    this.animator.transitionToState('active', targetX, targetY, mouseX, mouseY);
+                    
+                    const distance = Math.sqrt((this.sdfBlot.x - targetX) ** 2 + (this.sdfBlot.y - targetY) ** 2);
+                    if (distance < 15) {
+                        this.isLocked = true;
+                    }
+                } else if (!currentThought && !this.animator.isMoving()) {
+                    this.animator.transitionToState('idle');
+                }
+            }
+
+            updateCanvasPosition() {
+                const canvasX = this.sdfBlot.x - 75;
+                const canvasY = this.sdfBlot.y - 75;
+                
+                this.canvas.style.left = canvasX + 'px';
+                this.canvas.style.top = canvasY + 'px';
+            }
+
+            transitionToActiveState() {
+                this.isLocked = false;
+                if (currentThought) {
+                    const targetX = currentThought.x - CONFIG.blot.patientDistance;
+                    const targetY = currentThought.y;
+                    this.animator.transitionToState('active', targetX, targetY, mouseX, mouseY);
+                }
+            }
+
+            startDragMode() {
+                if (!currentThought) return;
+                
+                let startX, startY, thoughtStartX, thoughtStartY;
+                
+                const handleMouseDown = (e) => {
+                    this.isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    thoughtStartX = currentThought.x;
+                    thoughtStartY = currentThought.y;
+                    
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                    e.preventDefault();
+                };
+                
+                const handleMouseMove = (e) => {
+                    if (!this.isDragging || !currentThought) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    currentThought.moveTo(thoughtStartX + deltaX, thoughtStartY + deltaY);
+                };
+                
+                const handleMouseUp = () => {
+                    this.isDragging = false;
+                    thoughtManager.saveThoughts();
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                    
+                    this.isLocked = false;
+                    this.transitionToActiveState();
+                };
+                
+                document.addEventListener('mousedown', handleMouseDown, { once: true });
+            }
+
+            formatCurrentThought(format) {
+                if (currentThought) {
+                    currentThought.format(format);
+                    thoughtManager.saveThoughts();
+                }
+            }
+
+            deleteCurrentThought() {
+                if (currentThought) {
+                    currentThought.remove();
+                    thoughts = thoughts.filter(t => t !== currentThought);
+                    currentThought = null;
+                    appMode = 'new_thought';
+                    thoughtManager.updateMouseBlob();
+                    thoughtManager.saveThoughts();
+                    
+                    this.animator.transitionToState('idle');
+                    this.isLocked = false;
+                }
+            }
+        }
+
+        // === THOUGHT MANAGER ===
+        class ThoughtManager {
+            constructor() {
+                this.loadThoughts();
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    this.updateAppMode();
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (appMode === 'new_thought') {
+                            this.createOrUpdateThought('\n');
+                        } else if (appMode === 'current_thought' && currentThought) {
+                            currentThought.updateText(currentThought.text + '\n');
+                            this.saveThoughts();
+                        }
+                    }
+                });
+
+                document.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') return;
+                    if (appMode === 'new_thought') {
+                        this.createOrUpdateThought(e.key);
+                    } else if (appMode === 'current_thought' && currentThought) {
+                        currentThought.updateText(currentThought.text + e.key);
+                        this.saveThoughts();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('thought')) {
+                        this.setCurrentThought(thoughts.find(t => t.element === e.target));
+                    }
+                });
+            }
+
+            updateAppMode() {
+                if (currentThought) {
+                    const distance = Math.sqrt(
+                        (mouseX - currentThought.x) ** 2 + (mouseY - currentThought.y) ** 2
+                    );
+                    
+                    if (distance > CONFIG.typing.mouseStillThreshold) {
+                        appMode = 'new_thought';
+                    } else {
+                        appMode = 'current_thought';
+                    }
+                } else {
+                    appMode = 'new_thought';
+                }
+                
+                this.updateMouseBlob();
+            }
+
+            createOrUpdateThought(char) {
+                if (char === ' ' || char.length > 1) return;
+
+                const nearbyThought = this.findNearbyThought(mouseX, mouseY);
+                
+                if (nearbyThought) {
+                    nearbyThought.updateText(nearbyThought.text + char);
+                    this.setCurrentThought(nearbyThought);
+                } else {
+                    const newThought = new Thought(char, mouseX, mouseY);
+                    document.getElementById('thoughtsContainer').appendChild(newThought.element);
+                    thoughts.push(newThought);
+                    this.setCurrentThought(newThought);
+                }
+                
+                this.saveThoughts();
+            }
+
+            findNearbyThought(x, y) {
+                return thoughts.find(thought => {
+                    const distance = Math.sqrt((x - thought.x) ** 2 + (y - thought.y) ** 2);
+                    return distance < CONFIG.typing.mouseStillThreshold;
+                });
+            }
+
+            setCurrentThought(thought) {
+                if (currentThought) {
+                    currentThought.setActive(false);
+                }
+                
+                currentThought = thought;
+                if (currentThought) {
+                    currentThought.setActive(true);
+                    appMode = 'current_thought';
+                    
+                    if (blot) {
+                        blot.isLocked = false;
+                    }
+                } else {
+                    appMode = 'new_thought';
+                }
+                
+                this.updateMouseBlob();
+            }
+
+            updateMouseBlob() {
+                if (appMode === 'new_thought') {
+                    if (!mouseBlob) {
+                        mouseBlob = document.createElement('div');
+                        mouseBlob.className = 'mouse-blob';
+                        document.body.appendChild(mouseBlob);
+                    }
+                    mouseBlob.style.left = (mouseX - 6) + 'px';
+                    mouseBlob.style.top = (mouseY - 6) + 'px';
+                } else {
+                    if (mouseBlob) {
+                        mouseBlob.remove();
+                        mouseBlob = null;
+                    }
+                }
+            }
+
+            saveThoughts() {
+                const thoughtsData = thoughts.map(t => ({
+                    text: t.text,
+                    x: t.x,
+                    y: t.y,
+                    isActive: t.isActive
+                }));
+                localStorage.setItem(CONFIG.typing.storageKey, JSON.stringify(thoughtsData));
+            }
+
+            loadThoughts() {
+                const saved = localStorage.getItem(CONFIG.typing.storageKey);
+                if (saved) {
+                    const thoughtsData = JSON.parse(saved);
+                    thoughtsData.forEach(data => {
+                        const thought = new Thought(data.text, data.x, data.y);
+                        document.getElementById('thoughtsContainer').appendChild(thought.element);
+                        thoughts.push(thought);
+                        
+                        if (data.isActive) {
+                            this.setCurrentThought(thought);
+                        }
+                    });
+                }
+            }
+        }
+
+        // === CLEAR FUNCTIONALITY ===
+        function clearAllThoughts() {
+            thoughts.forEach(thought => thought.remove());
+            thoughts = [];
+            currentThought = null;
+            appMode = 'new_thought';
+            
+            if (thoughtManager) {
+                thoughtManager.updateMouseBlob();
+            }
+            
+            localStorage.removeItem(CONFIG.typing.storageKey);
+            
+            if (blot && blot.menuExpanded) {
+                blot.collapseMenu();
+            }
+        }
+
+        // === INITIALIZATION ===
+        let thoughtManager;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            thoughtManager = new ThoughtManager();
+            blot = new Blot();
+            
+            document.getElementById('clearButton').addEventListener('click', clearAllThoughts);
+        });
+    </script>
+</body>
+</html>

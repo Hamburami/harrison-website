@@ -1,0 +1,32 @@
+@font-face { font-family: Aweber; src: url('../fonts/AweberUltrathin-Wympz.ttf'); } 
+
+nav {
+    background-color: var(--primary);
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    font-family: Aweber;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    flex: 1 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    transition: background-color 0.1s;
+}
+
+nav a:hover {
+    background-color: hsl(from var(--primary) h s calc(l - 5));
+}
+
+.external:hover {
+    background-color:  hsl(from var(--primary) calc(h - 80) s calc(l - 5));
+}

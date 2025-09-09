@@ -3,6 +3,11 @@ html, body {
   padding: 0;
 }
 
+body {
+  display:flex;
+  flex-direction: column-reverse;
+}
+
 canvas {
   display: block;
 }
