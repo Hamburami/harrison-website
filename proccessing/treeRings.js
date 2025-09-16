@@ -7,6 +7,7 @@ let x;
 let y;
 let treeSize;
 let increment = 1;
+let subtractor = 0;
 let clear = true;
 let growing = false;
 let run = false;
@@ -19,7 +20,8 @@ function draw() {
     } else {
         if (growing) {
             background(savedBackground);
-            increment += 3.0;
+            increment += 5.0;
+            subtractor += (increment - subtractor) / 10.0;
             noStroke();
             fill(100, 50, 30);
             circle(mouseX, mouseY, increment);
@@ -27,14 +29,13 @@ function draw() {
         } else if (run) {
             console.log("hello");
             fill(230, 210, 130);
-            stroke(120, 80, 60);
-            strokeWeight(3);
-            circle(x, y, treeSize);
+            fill(120, 80, 60);
+            circle(x, y, treeSize+treeSize/50);
             noFill();
             let s = 1;
             while (s < treeSize) {
                 let yearsRain = random(35.0);
-                strokeWeight((yearsRain / 35.0) * 2);
+                strokeWeight((yearsRain / 33.0) * 2);
                 circle(x, y, s);
                 s += yearsRain;
                 console.log(s + "\n");

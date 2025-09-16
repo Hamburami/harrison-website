@@ -11,6 +11,10 @@
             box-sizing: border-box;
         }
 
+        *:focus {
+            outline: none !important;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -25,37 +29,55 @@
             position: relative;
             width: 100vw;
             height: 100vh;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 24px,
-                    rgba(139, 115, 85, 0.1) 25px
-                );
         }
 
         .thought {
             position: fixed;
-            background: transparent;
+            /* background: rgba(139, 115, 85, 0.00); */
             border: none;
             font-family: 'Georgia', serif;
             font-size: 1.2rem;
             color: #2c1810;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            cursor: text;
-            white-space: nowrap;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            white-space: pre-wrap;
             z-index: 2;
+            user-select: none;
+            outline: none !important; /* Remove all outlines */
         }
 
-        .thought:hover {
-            background: rgba(255, 255, 255, 0.2);
+    
+
+        .thought.dragging {
+            cursor: grabbing !important;
+            transform: scale(1.05) !important;
+            z-index: 10 !important;
+            background: rgba(139, 115, 85, 0.15) !important;
+            box-shadow: 
+                inset 0 1px 0 rgba(255, 255, 255, 0.4),
+                0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            transition: none !important;
         }
+
+        .thought:hover:not(.dragging) {
+            background: rgba(139, 115, 85, 0.12);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .thought.editing {
+            cursor: text;
+            user-select: text;
+            outline: none; /* Remove browser's default contentEditable outline */
+        }
+
+        /* thought.editing and current-thought should be the same thing, the current thought is the one that is being edited */
 
         .thought.current-thought {
-            background: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 10px rgba(44, 24, 16, 0.2);
+            background: rgba(139, 115, 85, 0.15);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            outline: none !important; /* Remove outline from current thought */
         }
 
         @keyframes float {
@@ -81,24 +103,57 @@
             animation: float 2s ease-in-out infinite;
         }
 
-        /* SDF Ink blot canvas styles */
-        .ink-blot-canvas {
+        /* Ink blot styles */
+        .ink-blot {
             position: fixed;
-            width: 150px;
-            height: 150px;
+            border-radius: 60% 40% 50% 45%;
             cursor: pointer;
+            transition: all 0.3s ease;
             z-index: 5;
-            pointer-events: auto;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-            transition: filter 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform-origin: center center;
         }
 
-        .ink-blot-canvas:hover {
-            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+        .ink-blot:active {
+            transform: scale(0.95);
         }
 
-        .ink-blot-canvas.menu-expanded {
-            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+        .ink-blot:not(.menu-expanded)::before {
+            display: none;
+        }
+
+        .ink-blot:not(.menu-expanded)::after {
+            display: none;
+        }
+
+        .ink-blot.menu-expanded::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .ink-blot.menu-expanded::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            width: 12px;
+            height: 6px;
+            background: #0f0907;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        /* Menu state - styling only, no size changes */
+        .ink-blot.menu-expanded {
+            /* All sizing handled by JavaScript */
+            transition: all 0.3s ease;
         }
 
         .menu-item {
@@ -120,6 +175,12 @@
                 transform: scale(1); 
             }
         }
+
+        .ink-blot:hover .menu-item {
+            opacity: 1;
+            transform: scale(1);
+        }
+
 
         /* Clear Button */
         .clear-button {
@@ -177,10 +238,8 @@
     </div>
     
     <div class="clear-button" id="clearButton">×</div>
-    <canvas class="ink-blot-canvas" id="inkBlotCanvas" width="150" height="150"></canvas>
+    <div class="ink-blot" id="inkBlot"></div>
 
-    <script src="../scripts/sdf-blot.js"></script>
-    <script src="../scripts/blot-animator.js"></script>
     <script>
         // Configuration
         const CONFIG = {
@@ -197,14 +256,14 @@
             }
         };
 
-        // Global state
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let appMode = 'new_thought';
+        // Global variables
+        let mouseX = 0;
+        let mouseY = 0;
+        let appMode = 'new_thought'; // 'new_thought' or 'current_thought'
         let mouseBlob = null;
-        let currentThought = null;
+        let currentThought = null; // This could replace appMode, if currentThought == null then appMode = new_thought else appMode = currentThought
         let thoughts = [];
-        let blot = null;
+        let blot = null; // Should this ever be null?
 
         // === THOUGHT CLASS ===
         class Thought {
@@ -214,6 +273,10 @@
                 this.y = y;
                 this.element = this.createElement();
                 this.isActive = false;
+                this.isDragging = false;
+                this.dragStartX = 0;
+                this.dragStartY = 0;
+                this.dragThreshold = 5;
             }
 
             createElement() {
@@ -222,15 +285,76 @@
                 element.style.left = this.x + 'px';
                 element.style.top = this.y + 'px';
                 element.textContent = this.text;
+                element.contentEditable = false; // What is this for? The div is not editable by defaut? ok
                 return element;
+            }
+
+
+            startDrag() {
+                this.isDragging = true;
+                this.element.classList.add('dragging');
+                this.select();
+            }
+
+            drag(e) {
+                if (this.isDragging) {
+                    const newX = this.x + (e.clientX - this.dragStartX);
+                    const newY = this.y + (e.clientY - this.dragStartY);
+                    this.moveTo(newX, newY);
+                    this.dragStartX = e.clientX;
+                    this.dragStartY = e.clientY;
+                }
+            }
+
+            endDrag() {
+                this.isDragging = false;
+                this.element.classList.remove('dragging');
+                if (thoughtManager) {
+                    thoughtManager.saveThoughts();
+                }
+
+                // Update blot position if this is the current thought
+                if (this === currentThought && blot) {
+                    blot.onCurrentThoughtChanged();
+                }
+            }
+
+            select() {
+                // Set as current thought
+                if (currentThought && currentThought !== this) {
+                    currentThought.setActive(false);
+                }
+                currentThought = this;
+                this.setActive(true);
+                appMode = 'current_thought';
+            }
+
+            enableEditing() {
+                this.element.contentEditable = true;
+                this.element.focus();
+                
+                // Position cursor at end of text
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(this.element);
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+
+            disableEditing() {
+                this.element.contentEditable = false;
+                this.text = this.element.textContent;
             }
 
             setActive(active) {
                 this.isActive = active;
                 if (active) {
                     this.element.classList.add('current-thought');
+                    this.enableEditing();
                 } else {
                     this.element.classList.remove('current-thought');
+                    this.disableEditing();
                 }
             }
 
@@ -272,144 +396,154 @@
             }
         }
 
-        // === ENHANCED BLOT CLASS WITH SDF RENDERING ===
+        // === BLOT CLASS ===
         /**
-         * MODULE: Enhanced Ink Blot Companion
-         * PURPOSE: Manages the AI companion using SDF rendering for organic shapes
+         * MODULE: Simplified Ink Blot Companion
+         * PURPOSE: Simple companion that follows the current thought
          * 
          * INPUTS:
-         * - Mouse position (mouseX, mouseY) - for positioning logic and avoidance
-         * - Current thought state (currentThought) - determines behavior and menu visibility
-         * - App mode (appMode) - influences animation states
+         * - currentThought variable - determines positioning
          * 
          * OUTPUTS:
-         * - Organically rendered blot using SDF techniques
-         * - Smooth morphing animations between states
-         * - Stable movement that avoids mouse cursor
-         * - Interactive radial menu for thought manipulation
+         * - Visual blot element positioned next to current thought
          * 
          * BEHAVIOR:
-         * - Uses SDF rendering for truly organic ink-like appearance
-         * - Smooth state transitions with proper easing
-         * - Intelligent pathfinding to avoid mouse cursor
-         * - Maintains menu functionality with enhanced visual feedback
+         * - Moves to be next to current thought when it changes
+         * - Simple positioning without complex menu system
          */
         class Blot {
             constructor() {
-                this.canvas = document.getElementById('inkBlotCanvas');
-                this.sdfBlot = new SDFBlot(this.canvas, window.innerWidth / 2, window.innerHeight / 2);
-                this.animator = new BlotAnimator(this.sdfBlot);
-                this.menuExpanded = false;
-                this.isDragging = false;
-                this.isLocked = false;
-                this.lastUpdateTime = Date.now();
+                this.element = document.getElementById('inkBlot');
+                // Default blot size - can be changed dynamically
+                this.blotWidth = 75;
+                this.blotHeight = 70;
+                this.menuWidth = 115;
+                this.menuHeight = 110;
                 
+                this.x = window.innerWidth / 2;
+                this.y = window.innerHeight / 2;
+                this.menuExpanded = false;
+                this.targetThought = null; // Track which thought this blot is positioned next to
                 this.menuItems = [
                     { text: 'B', action: 'bold', angle: 0 },
                     { text: 'I', action: 'italic', angle: 60 },
                     { text: 'a', action: 'lower', angle: 120 },
                     { text: 'A', action: 'upper', angle: 180 },
-                    { text: '↔', action: 'move', angle: 240 },
                     { text: '×', action: 'delete', angle: 300 }
                 ];
-                
-                this.init();
+                this.updateSize();
+                this.updatePosition();
+                this.renderBlot();
             }
 
-            init() {
-                this.canvas.addEventListener('mouseenter', () => {
-                    if (currentThought || thoughts.length > 0) {
-                        this.expandMenu();
-                    }
-                });
-                
-                this.canvas.addEventListener('mouseleave', (e) => {
-                    setTimeout(() => {
-                        if (!this.canvas.matches(':hover')) {
-                            this.collapseMenu();
-                        }
-                    }, 100);
-                });
-                
-                this.canvas.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.handleClick(e);
-                });
-                
-                this.startAnimation();
+            // Set blot size and maintain center position
+            setSize(width, height) {
+                this.blotWidth = width;
+                this.blotHeight = height;
+                this.updateSize();
+                this.updatePosition(); // Recalculate position to maintain center
             }
 
-            handleClick(e) {
-                if (!currentThought && thoughts.length > 0) {
-                    currentThought = thoughts[thoughts.length - 1];
-                    currentThought.setActive(true);
-                    appMode = 'current_thought';
-                    thoughtManager.updateMouseBlob();
+            // Update the actual DOM element size and styling
+            updateSize() {
+                const currentWidth = this.menuExpanded ? this.menuWidth : this.blotWidth;
+                const currentHeight = this.menuExpanded ? this.menuHeight : this.blotHeight;
+                
+                this.element.style.width = currentWidth + 'px';
+                this.element.style.height = currentHeight + 'px';
+                this.element.style.background = 'radial-gradient(circle at 30% 30%, #2c1810, #1a0f0a)';
+            }
+
+            // Get current center offsets based on current size
+            getCurrentCenterOffsets() {
+                const currentWidth = this.menuExpanded ? this.menuWidth : this.blotWidth;
+                const currentHeight = this.menuExpanded ? this.menuHeight : this.blotHeight;
+                return {
+                    centerX: currentWidth / 2,
+                    centerY: currentHeight / 2
+                };
+            }
+
+            updatePosition() {
+                if (currentThought) {
+                    // Position to the left of current thought (center coordinates)
+                    this.x = currentThought.x - 60;
+                    this.y = currentThought.y + 20;
+                    this.targetThought = currentThought; // Remember which thought we're positioned next to
                     
-                    // Transition to active state
-                    this.transitionToActiveState();
+                    // Keep within screen bounds (accounting for current blot size)
+                    const { centerX, centerY } = this.getCurrentCenterOffsets();
+                    this.x = Math.max(centerX, Math.min(window.innerWidth - centerX, this.x));
+                    this.y = Math.max(centerY, Math.min(window.innerHeight - centerY, this.y));
+                } else if (this.targetThought) {
+                    // Stay positioned next to the last target thought, don't move to center
+                    this.x = this.targetThought.x - 60;
+                    this.y = this.targetThought.y + 20;
+                    
+                    // Keep within screen bounds (accounting for current blot size)
+                    const { centerX, centerY } = this.getCurrentCenterOffsets();
+                    this.x = Math.max(centerX, Math.min(window.innerWidth - centerX, this.x));
+                    this.y = Math.max(centerY, Math.min(window.innerHeight - centerY, this.y));
+                } else {
+                    // Only go to center if there's no target thought at all
+                    this.x = window.innerWidth / 2;
+                    this.y = window.innerHeight / 2;
                 }
                 
-                if (!currentThought) return;
-
-                if (this.menuExpanded) {
-                    const rect = this.canvas.getBoundingClientRect();
-                    const centerX = rect.left + rect.width / 2;
-                    const centerY = rect.top + rect.height / 2;
-                    const clickX = e.clientX - centerX;
-                    const clickY = e.clientY - centerY;
-                    const distance = Math.sqrt(clickX * clickX + clickY * clickY);
-                    const angle = Math.atan2(clickY, clickX) * 180 / Math.PI;
-                    
-                    if (distance > 30 && distance < 60) {
-                        const normalizedAngle = ((angle + 360) % 360);
-                        const actionIndex = Math.floor((normalizedAngle + 30) / 60) % 6;
-                        this.executeAction(this.menuItems[actionIndex].action);
-                    }
-                }
+                // Position using center coordinates (subtract half current width/height)
+                const { centerX, centerY } = this.getCurrentCenterOffsets();
+                this.element.style.left = (this.x - centerX) + 'px';
+                this.element.style.top = (this.y - centerY) + 'px';
             }
 
+            // Called from ThoughtManager when currentThought changes
+            onCurrentThoughtChanged() {
+                this.updatePosition();
+            }
+
+            // Called from ThoughtManager on hover
             expandMenu() {
-                this.menuExpanded = true;
-                this.canvas.classList.add('menu-expanded');
-                this.animator.transitionToState('menuExpanded', null, null, mouseX, mouseY);
-                this.renderMenuOverlay();
+                if (currentThought || thoughts.length > 0) {
+                    this.menuExpanded = true;
+                    this.element.classList.add('menu-expanded');
+                    this.updateSize(); // Update size first
+                    this.updatePosition(); // Then reposition to maintain center
+                    this.renderBlot();
+                }
             }
 
+            // Called from ThoughtManager on mouse leave
             collapseMenu() {
                 this.menuExpanded = false;
-                this.canvas.classList.remove('menu-expanded');
-                const targetState = currentThought ? 'active' : 'idle';
-                this.animator.transitionToState(targetState, null, null, mouseX, mouseY);
-                this.clearMenuOverlay();
+                this.element.classList.remove('menu-expanded');
+                this.updateSize(); // Update size first
+                this.updatePosition(); // Then reposition to maintain center
+                this.renderBlot();
             }
 
-            renderMenuOverlay() {
-                // Create menu overlay div if it doesn't exist
-                if (!this.menuOverlay) {
-                    this.menuOverlay = document.createElement('div');
-                    this.menuOverlay.style.position = 'fixed';
-                    this.menuOverlay.style.pointerEvents = 'none';
-                    this.menuOverlay.style.zIndex = '6';
-                    document.body.appendChild(this.menuOverlay);
+            renderBlot() {
+                if (this.menuExpanded) {
+                    this.element.innerHTML = this.getMenuHTML();
+                } else {
+                    this.element.innerHTML = '';
                 }
-                
-                const rect = this.canvas.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const radius = 40;
-                
+            }
+
+            getMenuHTML() {
                 let html = '';
+                // Use current blot center as reference
+                const { centerX, centerY } = this.getCurrentCenterOffsets();
+                const radius = 30;
+                
                 this.menuItems.forEach((item, index) => {
-                    const angle = item.angle * Math.PI / 180;
-                    const x = centerX + radius * Math.cos(angle) - 12;
-                    const y = centerY + radius * Math.sin(angle) - 12;
+                    const angle = item.angle;
+                    const x = centerX + radius * Math.cos(angle * Math.PI / 180);
+                    const y = centerY + radius * Math.sin(angle * Math.PI / 180);
                     
                     html += `<div class="menu-item" data-action="${item.action}" style="
-                        position: fixed;
-                        left: ${x}px;
-                        top: ${y}px;
+                        position: absolute;
+                        left: ${x - 12}px;
+                        top: ${y - 12}px;
                         width: 24px;
                         height: 24px;
                         display: flex;
@@ -418,162 +552,76 @@
                         font-size: 0.9rem;
                         font-weight: bold;
                         color: white;
-                        background: rgba(44, 24, 16, 0.8);
-                        border-radius: 50%;
                         cursor: pointer;
-                        pointer-events: auto;
                         transition: all 0.2s ease;
                         animation: fadeIn 0.3s ease ${index * 0.05}s both;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                    " onclick="blot.executeAction('${item.action}')">${item.text}</div>`;
+                    ">${item.text}</div>`;
                 });
-                
-                this.menuOverlay.innerHTML = html;
+                return html;
             }
 
-            clearMenuOverlay() {
-                if (this.menuOverlay) {
-                    this.menuOverlay.innerHTML = '';
-                }
-            }
-
+            // Called from ThoughtManager when menu item is clicked
             executeAction(action) {
-                if (action === 'move') {
-                    this.startDragMode();
-                } else if (action === 'delete') {
-                    this.deleteCurrentThought();
-                } else {
-                    this.formatCurrentThought(action);
+                // Use targetThought (the thought we're positioned next to) instead of currentThought
+                const targetThought = this.targetThought;
+                if (!targetThought) return;
+                
+                switch (action) {
+                    case 'bold':
+                    case 'italic':
+                    case 'upper':
+                    case 'lower':
+                        targetThought.format(action);
+                        if (thoughtManager) thoughtManager.saveThoughts();
+                        break;
+                    case 'move':
+                        // TODO: Implement move functionality
+                        break;
+                    case 'delete':
+                        // Delete the target thought
+                        const index = thoughts.indexOf(targetThought);
+                        if (index > -1) {
+                            targetThought.element.remove();
+                            thoughts.splice(index, 1);
+                            this.targetThought = null;
+                            if (currentThought === targetThought) {
+                                currentThought = null;
+                                appMode = 'new_thought';
+                            }
+                            if (thoughtManager) {
+                                thoughtManager.updateMouseBlob();
+                                thoughtManager.saveThoughts();
+                            }
+                        }
+                        break;
                 }
                 this.collapseMenu();
-            }
-
-            startAnimation() {
-                const animate = () => {
-                    const currentTime = Date.now();
-                    const deltaTime = currentTime - this.lastUpdateTime;
-                    this.lastUpdateTime = currentTime;
-                    
-                    // Update behavior based on current state
-                    this.updateBehavior();
-                    
-                    // Update SDF blot and animator
-                    this.sdfBlot.update(deltaTime);
-                    this.animator.update(deltaTime);
-                    
-                    // Render the blot
-                    this.sdfBlot.renderBlot();
-                    
-                    // Update canvas position
-                    this.updateCanvasPosition();
-                    
-                    requestAnimationFrame(animate);
-                };
-                animate();
-            }
-
-            updateBehavior() {
-                if (currentThought && !this.isLocked && !this.animator.isMoving()) {
-                    const thoughtX = currentThought.x;
-                    const thoughtY = currentThought.y;
-                    
-                    const targetX = thoughtX - CONFIG.blot.patientDistance;
-                    const targetY = thoughtY;
-                    
-                    // Use animator for smooth movement with mouse avoidance
-                    this.animator.transitionToState('active', targetX, targetY, mouseX, mouseY);
-                    
-                    // Check if close enough to lock
-                    const distance = Math.sqrt((this.sdfBlot.x - targetX) ** 2 + (this.sdfBlot.y - targetY) ** 2);
-                    if (distance < 15) {
-                        this.isLocked = true;
-                    }
-                } else if (!currentThought && !this.animator.isMoving()) {
-                    this.animator.transitionToState('idle');
-                }
-            }
-
-            updateCanvasPosition() {
-                const canvasX = this.sdfBlot.x - 75; // Center the 150px canvas
-                const canvasY = this.sdfBlot.y - 75;
-                
-                this.canvas.style.left = canvasX + 'px';
-                this.canvas.style.top = canvasY + 'px';
-            }
-
-            transitionToActiveState() {
-                this.isLocked = false;
-                if (currentThought) {
-                    const targetX = currentThought.x - CONFIG.blot.patientDistance;
-                    const targetY = currentThought.y;
-                    this.animator.transitionToState('active', targetX, targetY, mouseX, mouseY);
-                }
-            }
-
-            startDragMode() {
-                if (!currentThought) return;
-                
-                let startX, startY, thoughtStartX, thoughtStartY;
-                
-                const handleMouseDown = (e) => {
-                    this.isDragging = true;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    thoughtStartX = currentThought.x;
-                    thoughtStartY = currentThought.y;
-                    
-                    document.addEventListener('mousemove', handleMouseMove);
-                    document.addEventListener('mouseup', handleMouseUp);
-                    e.preventDefault();
-                };
-                
-                const handleMouseMove = (e) => {
-                    if (!this.isDragging || !currentThought) return;
-                    
-                    const deltaX = e.clientX - startX;
-                    const deltaY = e.clientY - startY;
-                    
-                    currentThought.moveTo(thoughtStartX + deltaX, thoughtStartY + deltaY);
-                };
-                
-                const handleMouseUp = () => {
-                    this.isDragging = false;
-                    thoughtManager.saveThoughts();
-                    document.removeEventListener('mousemove', handleMouseMove);
-                    document.removeEventListener('mouseup', handleMouseUp);
-                    
-                    // Update blot position after drag
-                    this.isLocked = false;
-                    this.transitionToActiveState();
-                };
-                
-                document.addEventListener('mousedown', handleMouseDown, { once: true });
-            }
-
-            formatCurrentThought(format) {
-                if (currentThought) {
-                    currentThought.format(format);
-                    thoughtManager.saveThoughts();
-                }
-            }
-
-            deleteCurrentThought() {
-                if (currentThought) {
-                    currentThought.remove();
-                    thoughts = thoughts.filter(t => t !== currentThought);
-                    currentThought = null;
-                    appMode = 'new_thought';
-                    thoughtManager.updateMouseBlob();
-                    thoughtManager.saveThoughts();
-                    
-                    // Transition to idle state
-                    this.animator.transitionToState('idle');
-                    this.isLocked = false;
-                }
             }
         }
 
         // === THOUGHT MANAGER ===
+        /**
+         * MODULE: Thought Manager
+         * PURPOSE: Manages thought creation, editing, and keyboard input handling
+         * 
+         * INPUTS:
+         * - Keyboard events (keydown, keypress)
+         * - Mouse position and movement
+         * - User typing input
+         * 
+         * OUTPUTS:
+         * - New thought creation at mouse position
+         * - Character addition to existing thoughts
+         * - Backspace/delete functionality
+         * - App mode switching between 'new_thought' and 'current_thought'
+         * 
+         * BEHAVIOR:
+         * - Listens for all keyboard input to detect typing
+         * - Creates thoughts at mouse cursor location
+         * - Handles Enter key for line breaks
+         * - Handles Backspace for character/thought deletion
+         * - Manages mouse blob visibility based on app mode
+         */
         class ThoughtManager {
             constructor() {
                 this.loadThoughts();
@@ -581,48 +629,172 @@
             }
 
             setupEventListeners() {
+                // Mouse tracking variables for drag detection
+                let mouseDownTime = 0;
+                let mouseDownX = 0;
+                let mouseDownY = 0;
+                let hasMoved = false;
+                let draggedThought = null;
+
+                // Mouse movement tracking
                 document.addEventListener('mousemove', (e) => {
                     mouseX = e.clientX;
                     mouseY = e.clientY;
                     this.updateAppMode();
-                });
 
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (appMode === 'new_thought') {
-                            this.createOrUpdateThought('\n');
-                        } else if (appMode === 'current_thought' && currentThought) {
-                            currentThought.updateText(currentThought.text + '\n');
-                            this.saveThoughts();
+                    // Handle dragging
+                    if (mouseDownTime > 0 && draggedThought) {
+                        const deltaX = Math.abs(e.clientX - mouseDownX);
+                        const deltaY = Math.abs(e.clientY - mouseDownY);
+                        
+                        if (deltaX > draggedThought.dragThreshold || deltaY > draggedThought.dragThreshold) {
+                            hasMoved = true;
+                            if (!draggedThought.isDragging) {
+                                draggedThought.startDrag();
+                            }
+                            draggedThought.drag(e);
                         }
                     }
                 });
 
-                document.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') return; // Handle Enter in keydown instead
-                    if (appMode === 'new_thought') {
-                        this.createOrUpdateThought(e.key);
-                    } else if (appMode === 'current_thought' && currentThought) {
-                        currentThought.updateText(currentThought.text + e.key);
-                        this.saveThoughts();
+                // Single mouse down handler for all thoughts
+                document.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('thought')) {
+                        e.preventDefault();
+                        draggedThought = thoughts.find(t => t.element === e.target);
+                        if (draggedThought) {
+                            mouseDownTime = Date.now();
+                            mouseDownX = e.clientX;
+                            mouseDownY = e.clientY;
+                            hasMoved = false;
+                            draggedThought.dragStartX = e.clientX;
+                            draggedThought.dragStartY = e.clientY;
+                        }
                     }
                 });
 
+                // Single mouse up handler - ALWAYS clears drag state
+                document.addEventListener('mouseup', (e) => {
+                    if (mouseDownTime > 0 && draggedThought) {
+                        if (draggedThought.isDragging) {
+                            draggedThought.endDrag();
+                        } else if (!hasMoved) {
+                            // Simple click - select the thought
+                            this.setCurrentThought(draggedThought);
+                        }
+                        // Always reset drag tracking variables
+                        mouseDownTime = 0;
+                        mouseDownX = 0;
+                        mouseDownY = 0;
+                        hasMoved = false;
+                        draggedThought = null;
+                    }
+                });
+
+                // Blot hover handling
+                document.addEventListener('mouseenter', (e) => {
+                    if (e.target.id === 'inkBlot' && blot) {
+                        blot.expandMenu();
+                    }
+                }, true);
+
+                document.addEventListener('mouseleave', (e) => {
+                    if (e.target.id === 'inkBlot' && blot) {
+                        // Add small delay to prevent flickering
+                        setTimeout(() => {
+                            if (!blot.element.matches(':hover')) {
+                                blot.collapseMenu();
+                            }
+                        }, 100);
+                    }
+                }, true);
+
+                // Blot menu item clicks
                 document.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('thought')) {
-                        this.setCurrentThought(thoughts.find(t => t.element === e.target));
+                    if (e.target.classList.contains('menu-item') && blot) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const action = e.target.getAttribute('data-action');
+                        blot.executeAction(action);
+                        return;
+                    }
+
+                    // Blot click handling
+                    if (e.target.id === 'inkBlot' && blot) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!currentThought && thoughts.length > 0) {
+                            this.setCurrentThought(thoughts[thoughts.length - 1]);
+                        }
+                        return;
+                    }
+
+                    // Click handling for deselecting thoughts when clicking empty space
+                    if (!e.target.classList.contains('thought') && !e.target.closest('.thought')) {
+                        if (currentThought) {
+                            currentThought.setActive(false);
+                            currentThought = null;
+                            appMode = 'new_thought';
+                            this.updateMouseBlob();
+                        }
+                    }
+                });
+
+                // Unified keyboard input handling - ALL TYPING DETECTED HERE
+                document.addEventListener('keydown', (e) => {
+                    // If a thought is active, let contentEditable handle most keys
+                    if (currentThought && currentThought.isActive) {
+                        if (e.key === 'Escape') {
+                            e.preventDefault();
+                            currentThought.setActive(false);
+                            currentThought = null;
+                            appMode = 'new_thought';
+                            this.updateMouseBlob();
+                        }
+                        // Let contentEditable handle other keys naturally
+                        return;
+                    }
+
+                    if (e.key === 'Backspace' || e.key === 'Delete') {
+                        e.preventDefault();
+                        this.handleDelete();
+                    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                        // Regular character input
+                        e.preventDefault();
+                        if (appMode === 'new_thought') {
+                            this.createOrUpdateThought(e.key);
+                        }
                     }
                 });
             }
 
             updateAppMode() {
                 if (currentThought) {
+                    // Check if mouse is over blot - if so, don't switch modes
+                    const blotRect = document.getElementById('inkBlot').getBoundingClientRect();
+                    const mouseOverBlot = mouseX >= blotRect.left && mouseX <= blotRect.right && 
+                                         mouseY >= blotRect.top && mouseY <= blotRect.bottom;
+                    
+                    if (mouseOverBlot) {
+                        // Don't change mode when hovering over blot
+                        return;
+                    }
+                    
+                    // Calculate distance to thought's bounding box, not just top-left position
+                    const rect = currentThought.element.getBoundingClientRect();
+                    
+                    // Find closest point on the bounding box to the mouse
+                    const closestX = Math.max(rect.left, Math.min(mouseX, rect.right));
+                    const closestY = Math.max(rect.top, Math.min(mouseY, rect.bottom));
+                    
                     const distance = Math.sqrt(
-                        (mouseX - currentThought.x) ** 2 + (mouseY - currentThought.y) ** 2
+                        (mouseX - closestX) ** 2 + (mouseY - closestY) ** 2
                     );
                     
                     if (distance > CONFIG.typing.mouseStillThreshold) {
+                        // Mouse moved far from current thought - switch to new thought mode
+                        currentThought.setActive(false);
+                        currentThought = null;
                         appMode = 'new_thought';
                     } else {
                         appMode = 'current_thought';
@@ -663,21 +835,34 @@
                 if (currentThought) {
                     currentThought.setActive(false);
                 }
-                
                 currentThought = thought;
-                if (currentThought) {
-                    currentThought.setActive(true);
+                if (thought) {
+                    thought.setActive(true);
                     appMode = 'current_thought';
-                    
-                    // Unlock blot so it can move to new position
-                    if (blot) {
-                        blot.isLocked = false;
-                    }
                 } else {
                     appMode = 'new_thought';
                 }
-                
                 this.updateMouseBlob();
+                
+                // Notify blot of current thought change
+                if (blot) {
+                    blot.onCurrentThoughtChanged();
+                }
+            }
+
+            handleDelete() {
+                if (appMode === 'current_thought' && currentThought) {
+                    // Delete the current thought
+                    const index = thoughts.indexOf(currentThought);
+                    if (index > -1) {
+                        currentThought.element.remove();
+                        thoughts.splice(index, 1);
+                        currentThought = null;
+                        appMode = 'new_thought';
+                        this.updateMouseBlob();
+                        this.saveThoughts();
+                    }
+                }
             }
 
             updateMouseBlob() {
@@ -742,9 +927,12 @@
             // Clear storage
             localStorage.removeItem(CONFIG.typing.storageKey);
             
-            // Collapse blot menu if open
-            if (blot && blot.menuExpanded) {
-                blot.collapseMenu();
+            // Notify blot of current thought change
+            if (blot) {
+                blot.onCurrentThoughtChanged();
+                if (blot.menuExpanded) {
+                    blot.collapseMenu();
+                }
             }
         }
 
@@ -757,258 +945,6 @@
             
             // Setup clear button
             document.getElementById('clearButton').addEventListener('click', clearAllThoughts);
-        });
-    </script>
-</body>
-</html>
-            constructor() {
-                this.loadThoughts();
-                this.setupEventListeners();
-            }
-
-            setupEventListeners() {
-                document.addEventListener('mousemove', (e) => {
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
-                    this.updateAppMode();
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (appMode === 'new_thought') {
-                            this.createOrUpdateThought('\n');
-                        } else if (appMode === 'current_thought' && currentThought) {
-                            currentThought.updateText(currentThought.text + '\n');
-                            this.saveThoughts();
-                        }
-                    }
-                });
-
-                document.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') return; // Handle Enter in keydown instead
-                    if (appMode === 'new_thought') {
-                        this.createOrUpdateThought(e.key);
-                    } else if (appMode === 'current_thought' && currentThought) {
-                        currentThought.updateText(currentThought.text + e.key);
-                        this.saveThoughts();
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('thought')) {
-                        this.setCurrentThought(thoughts.find(t => t.element === e.target));
-                    }
-                });
-            }
-
-            updateAppMode() {
-                if (currentThought) {
-                    const distance = Math.sqrt(
-                        (mouseX - currentThought.x) ** 2 + (mouseY - currentThought.y) ** 2
-                    );
-                    
-                    if (distance > CONFIG.typing.mouseStillThreshold) {
-                        appMode = 'new_thought';
-                    } else {
-                        appMode = 'current_thought';
-                    }
-                } else {
-                    appMode = 'new_thought';
-                }
-                
-                this.updateMouseBlob();
-            }
-
-            createOrUpdateThought(char) {
-                if (char === ' ' || char.length > 1) return;
-
-                const nearbyThought = this.findNearbyThought(mouseX, mouseY);
-                
-                if (nearbyThought) {
-                    nearbyThought.updateText(nearbyThought.text + char);
-                    this.setCurrentThought(nearbyThought);
-                } else {
-                    const newThought = new Thought(char, mouseX, mouseY);
-                    document.getElementById('thoughtsContainer').appendChild(newThought.element);
-                    thoughts.push(newThought);
-                    this.setCurrentThought(newThought);
-                }
-                
-                this.saveThoughts();
-            }
-
-            findNearbyThought(x, y) {
-                return thoughts.find(thought => {
-                    const distance = Math.sqrt((x - thought.x) ** 2 + (y - thought.y) ** 2);
-                    return distance < CONFIG.typing.mouseStillThreshold;
-                });
-            }
-
-            setCurrentThought(thought) {
-                if (currentThought) {
-                    currentThought.setActive(false);
-                }
-                
-                currentThought = thought;
-                if (currentThought) {
-                    currentThought.setActive(true);
-                    appMode = 'current_thought';
-                    
-                    // Unlock blot so it can move to new position
-                    if (blot) {
-                        blot.isLocked = false;
-                    }
-                } else {
-                    appMode = 'new_thought';
-                }
-                
-                this.updateMouseBlob();
-            }
-
-            updateMouseBlob() {
-                if (appMode === 'new_thought') {
-                    if (!mouseBlob) {
-                        mouseBlob = document.createElement('div');
-                        mouseBlob.className = 'mouse-blob';
-                        document.body.appendChild(mouseBlob);
-                    }
-                    mouseBlob.style.left = (mouseX - 6) + 'px';
-                    mouseBlob.style.top = (mouseY - 6) + 'px';
-                } else {
-                    if (mouseBlob) {
-                        mouseBlob.remove();
-                        mouseBlob = null;
-                    }
-                }
-            }
-
-            startNewThought(char) {
-                if (currentThought) {
-                    currentThought.element.classList.remove('current-thought');
-                }
-
-                const thoughtElement = document.createElement('div');
-                thoughtElement.className = 'thought current-thought';
-                thoughtElement.style.left = mouseX + 'px';
-                thoughtElement.style.top = mouseY + 'px';
-                thoughtElement.textContent = char;
-
-                this.container = document.getElementById('thoughtsContainer');
-                this.container.appendChild(thoughtElement);
-
-                currentThought = {
-                    element: thoughtElement,
-                    text: char,
-                    x: mouseX,
-                    y: mouseY
-                };
-
-                thoughts.push(currentThought);
-                this.saveThoughts();
-            }
-
-            appendToCurrentThought(char) {
-                if (currentThought) {
-                    currentThought.text += char;
-                    currentThought.element.textContent = currentThought.text;
-                    this.saveThoughts();
-                }
-            }
-
-            formatCurrent(format) {
-                if (!currentThought) return;
-
-                let formattedText = currentThought.text;
-                switch (format) {
-                    case 'bold':
-                        currentThought.element.style.fontWeight = 
-                            currentThought.element.style.fontWeight === 'bold' ? 'normal' : 'bold';
-                        break;
-                    case 'italic':
-                        currentThought.element.style.fontStyle = 
-                            currentThought.element.style.fontStyle === 'italic' ? 'normal' : 'italic';
-                        break;
-                    case 'upper':
-                        formattedText = currentThought.text.toUpperCase();
-                        currentThought.text = formattedText;
-                        currentThought.element.textContent = formattedText;
-                        break;
-                    case 'lower':
-                        formattedText = currentThought.text.toLowerCase();
-                        currentThought.text = formattedText;
-                        currentThought.element.textContent = formattedText;
-                        break;
-                }
-                this.saveThoughts();
-            }
-
-            deleteCurrent() {
-                if (!currentThought) return;
-                
-                currentThought.element.remove();
-                thoughts = thoughts.filter(t => t !== currentThought);
-                currentThought = null;
-                appMode = 'new_thought';
-                
-                if (window.thoughtManager) {
-                    window.thoughtManager.updateMouseBlob();
-                    window.thoughtManager.saveThoughts();
-                }
-            }
-
-            saveThoughts() {
-                const thoughtsData = thoughts.map(thought => ({
-                    text: thought.text,
-                    x: thought.x,
-                    y: thought.y,
-                    fontWeight: thought.element.style.fontWeight,
-                    fontStyle: thought.element.style.fontStyle
-                }));
-                localStorage.setItem(CONFIG.typing.storageKey, JSON.stringify(thoughtsData));
-            }
-
-            loadThoughts() {
-                const savedThoughts = localStorage.getItem(CONFIG.typing.storageKey);
-                if (savedThoughts) {
-                    const thoughtsData = JSON.parse(savedThoughts);
-                    thoughtsData.forEach(data => {
-                        const thoughtElement = document.createElement('div');
-                        thoughtElement.className = 'thought';
-                        thoughtElement.style.left = data.x + 'px';
-                        thoughtElement.style.top = data.y + 'px';
-                        thoughtElement.textContent = data.text;
-                        thoughtElement.style.fontWeight = data.fontWeight || 'normal';
-                        thoughtElement.style.fontStyle = data.fontStyle || 'normal';
-
-                        this.container.appendChild(thoughtElement);
-
-                        thoughts.push({
-                            element: thoughtElement,
-                            text: data.text,
-                            x: data.x,
-                            y: data.y
-                        });
-                    });
-                }
-            }
-        }
-
-        // Initialize application
-        window.onload = function() {
-            window.companion = new InkBlotCompanion();
-            window.thoughtManager = new ThoughtManager();
-        };
-
-        // Mouse tracking
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            if (window.thoughtManager) {
-                window.thoughtManager.checkMouseMovement();
-                window.thoughtManager.updateMouseBlob();
-            }
         });
     </script>
 </body>
