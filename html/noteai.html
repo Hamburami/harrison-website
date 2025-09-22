@@ -276,7 +276,8 @@
                 this.isDragging = false;
                 this.dragStartX = 0;
                 this.dragStartY = 0;
-                this.dragThreshold = 5;
+                this.dragThreshold = 5; // This should be a global thing not data associated with the class
+                this.timestamp = Date.now();
             }
 
             createElement() {
@@ -284,7 +285,7 @@
                 element.className = 'thought';
                 element.style.left = this.x + 'px';
                 element.style.top = this.y + 'px';
-                element.textContent = this.text;
+                element.textContent = '';
                 element.contentEditable = false; // What is this for? The div is not editable by defaut? ok
                 return element;
             }
@@ -344,7 +345,6 @@
 
             disableEditing() {
                 this.element.contentEditable = false;
-                this.text = this.element.textContent;
             }
 
             setActive(active) {
@@ -359,7 +359,6 @@
             }
 
             updateText(text) {
-                this.text = text;
                 this.element.textContent = text;
             }
 
@@ -381,12 +380,10 @@
                             this.element.style.fontStyle === 'italic' ? 'normal' : 'italic';
                         break;
                     case 'upper':
-                        this.text = this.text.toUpperCase();
-                        this.element.textContent = this.text;
+                        this.element.textContent = this.element.textContent.toUpperCase();
                         break;
                     case 'lower':
-                        this.text = this.text.toLowerCase();
-                        this.element.textContent = this.text;
+                        this.element.textContent = this.element.textContent.toLowerCase();
                         break;
                 }
             }

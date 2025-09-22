@@ -20,6 +20,109 @@
     <body>
 
         <main>
+
+            <article>
+                <h2>Laserz!</h2>
+                <p>I'll be generating designs to be cut using a laser.</p>
+
+                <h3>Designs</h3>
+                <p><em>Some designs I made messing around with the Processing Turtle.</em></p>
+                <div class="img-grid">
+                    <img src="../img/laser/spiral-sphere.png" height="300" width="auto">
+                    <img src="../img/laser/circles.png" height="300" width="auto">
+                    <img src="../img/laser/moldy-peanut.png" height="300" width="auto">
+                    <img src="../img/laser/moon-like.png" height="300" width="auto">
+                    <img src="../img/laser/nebula.png" height="300" width="auto">
+                    <img src="../img/laser/oblong.png" height="300" width="auto">
+                    <img src="../img/laser/pentagon-galaxy.png" height="300" width="auto">
+                    <img src="../img/laser/pentagon-star-galaxy.png" height="300" width="auto">
+                    <img src="../img/laser/sun-like.png" height="300" width="auto">
+                </div>
+
+                <h3>Prints</h3>
+                <p>I chose these designs to print</p>
+                <div class="side-by-side">
+                    <figure>
+                        <img src="../img/laser/thefourth_page-0001.jpg" style="width: 400px; height: 400px; border: none;">
+                        <figcaption>This one I etched</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/laser/thecutone_page-0001.jpg" style="width: 400px; height: 400px; border: none;">
+                        <figcaption>This one I cut</figcaption>
+                    </figure>
+                </div>
+
+                <p>Here's how they came out</p>
+                 <div class="side-by-side">
+                    <figure>
+                        <img src="../img/laser/cut1.jpeg" class="portait">
+                        <figcaption>Testing etching</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/laser/cut2.jpeg" alt="spanish tree; camo like pattern on the bark"  class="portait">
+                        <figcaption>Etching on clear acrylic; this one came out the best</figcaption>
+                    </figure>
+                </div>
+
+                <figure>
+                        <img src="../img/laser/cut-failed.jpeg" alt="spanish tree; camo like pattern on the bark" width="500" height="auto">
+                        <figcaption>The machine stopped in the middle of my cut and I was out of time, I really hope to go back soon and re-cut this!</figcaption>
+                </figure>
+
+                <h4>Code</h4>
+                <p>Here is the Processing code I used to make these, I made minute changes to the float variables and got a huge variety of results.</p>
+
+                <p style="font-family: monospace;">
+                    import Turtle.*;<br>
+                    import processing.pdf.*;<br>
+                    <br>
+                    <br>
+                    void setup() {<br>
+                    size (1600, 1600, PDF, "thecutone.pdf");<br>
+                    background(0);<br>
+                    stroke(255);<br>
+                    noLoop();<br>
+                    }<br>
+                    <br>
+                    <br>
+                    float size = 1.3f;<br>
+                    float thing = 1.03f;<br>
+                    float inc = 1.111;<br>
+                    <br>
+                    int count = 0;<br>
+                    <br>
+                    void draw(){<br>
+                    thang();<br>
+                    exit();<br>
+                    }<br>
+                    <br>
+                    void TurtleCircle(Turtle t, float size, float k) {<br>
+                    for (int i = 0; i &lt; 360; i++) {<br>
+                        //float res = i*1.004;<br>
+                        t.forward(size); <br>
+                        t.right((k*(((int)(i*i))/380)+1));<br>
+                    }<br>
+                    }<br>
+                    <br>
+                    void thang() {<br>
+                    background(0);<br>
+                    stroke(255);<br>
+                        <br>
+                    Turtle t = new Turtle(this);<br>
+                    t.penUp();<br>
+                    t.goToPoint(300, 320);<br>
+                    t.penDown();<br>
+                    <br>
+                    <br>
+                    for (int i=0; i&lt;20; i++) {<br>
+                        TurtleCircle(t, size, thing);<br>
+                        t.right(14);<br>
+                        size = size*inc;<br>
+                    }<br>
+                    }<br>
+
+                </p>
+
             <div class="sketch">
                 <iframe width="700" height="700" src="../proccessing/treeRings.html"></iframe>
                 <p class="sketch__caption">Press 'r' to add a layer of grass</p>
