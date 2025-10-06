@@ -20,6 +20,56 @@
     <body>
 
         <main>
+             <article>
+                <h2>L-Systems</h2>
+                <p>Let's make some L-System art!</p>
+                <h3>Task 1</h3>
+                <h3>Task 2</h3>
+                <p>I completed the code implementations and got the initSquare() method to be used with all of its normal functions</p>
+                <div class="side-by-side">
+                    <figure>
+                        <img src="../img/lsystems/n1.png" class="square">
+                        <figcaption>n1</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/n2.png" class="square">
+                        <figcaption>n2</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/n3.png" class="square">
+                        <figcaption>n3</figcaption>
+                    </figure>
+                </div>
+                <h3>Task 3</h3>
+                <p>Here are the L-Systems I created</p>
+                 <figure>
+                        <img src="../img/lsystems/fractal-tree.png" class="square">
+                        <figcaption>Here's a fractal tree I created</figcaption>
+                        <p class="code">
+                            <pre>
+                                LSystem garbonzo() {
+                                    // initialize turtle variables
+                                    float moveDist = 20;
+                                    float rotateAngle = 45;
+                                    float scaleFactor = 1;
+                                    
+                                    // The intial axiom / input string
+                                    String axiom = "L";
+                                    
+                                    // Create any production rules
+                                    HashMap<Character, String> rules = new HashMap<>();
+                                    rules.put('F', "FF");
+                                    rules.put('L', "F[+L]-L");
+                                        
+                                    // Create and return the Lsystem
+                                    return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                                }
+                            </pre>
+                        </p>
+                    </figure>
+                <h3>Task 4</h3>
+
+            </article>
 
             <article>
                 <h2>Laserz!</h2>
@@ -72,7 +122,7 @@
                 <h4>Code</h4>
                 <p>Here is the Processing code I used to make these, I made minute changes to the float variables and got a huge variety of results.</p>
 
-                <p style="font-family: monospace;">
+                <p class="code">
                     import Turtle.*;<br>
                     import processing.pdf.*;<br>
                     <br>
