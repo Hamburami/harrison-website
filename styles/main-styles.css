@@ -152,3 +152,16 @@ iframe {
     padding: 10px 20px 10px 20px;
     width: fit-content;
 }
+
+.code-collapse {
+    background-color: rgba(2, 78, 241, 0.057);
+    padding: 20px;
+    border-radius: 30px;
+    margin: 10px;
+    width:100%;
+    box-sizing: border-box;
+}
+
+.hidden {
+    display: none;
+}

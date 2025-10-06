@@ -13,7 +13,7 @@ let growing = false;
 let run = false;
 let savedBackground;
 function draw() {
-    console.log("\n drawn" + run);
+    //console.log("\n drawn" + run);
     if (clear) {
         background(230, 100, 80);
         clear = false;
