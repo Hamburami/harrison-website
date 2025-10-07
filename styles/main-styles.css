@@ -94,6 +94,15 @@ article figure img.square {
     aspect-ratio: 1 / 1;
 }
 
+article::after {
+    content:" ";
+    display: block;
+    height: 150px;
+    width: 100%;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.113);
+    
+}
+
 
 .column {
     display: flex;
