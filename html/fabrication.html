@@ -24,6 +24,113 @@
                 <h2>L-Systems</h2>
                 <p>Let's make some L-System art!</p>
                 <h3>Task 1</h3>
+                <p>Here's my canvas and code for the warm-up task</p>
+                <figure>
+                        <img src="../img/lsystems/part1.png">
+                        <figcaption>From left to right: I, T, Triangle, Pentagon, Circle</figcaption>
+                </figure>
+                <button type="button" class="collapse">See Code</button>
+                <div class="code-collapse hidden">
+                    <pre>
+                        import Turtle.*;
+
+                        Turtle t;
+
+                        String procedure = "F+";
+
+                        void setup() {
+                        size(800, 800);
+                        pixelDensity(1);
+                        background(0);
+                        stroke(255);
+                        strokeWeight(3);
+                        
+                        t = new Turtle(this);
+                        
+                        noLoop();
+                        }
+
+                        int dist = 10;
+                        void draw() {
+                        // I
+                        t.push();
+                        t.push();
+                        t.forward(dist);
+                        t.forward(dist);
+                        t.push();
+                        t.left(90);
+                        t.forward(dist);
+                        t.pop();
+                        t.right(90);
+                        t.forward(dist);
+                        t.pop();
+                        t.right(90);
+                        t.forward(dist);
+                        t.pop();
+                        t.left(90);
+                        t.forward(dist);
+                        
+                        //move over
+                        next();
+                        
+                        // T
+                        t.push();
+                        t.forward(dist);
+                        t.forward(dist);
+                        t.push();
+                        t.left(90);
+                        t.forward(dist);
+                        t.pop();
+                        t.right(90);
+                        t.forward(dist);
+                        t.pop();
+                        
+                        //move over
+                        t.left(90);
+                        next();
+                        
+                        // triangle
+                        t.push();
+                        t.forward(dist*2);
+                        t.right(120);
+                        t.forward(dist*2);
+                        t.right(120);
+                        t.forward(dist*2);
+                        t.pop();
+                        
+                        t.left(90);
+                        next();
+                        t.push();
+                        t.forward(dist*2);
+                        t.right(72);
+                        t.forward(dist*2);
+                        t.right(72);
+                        t.forward(dist*2);
+                        t.right(72);
+                        t.forward(dist*2);
+                        t.right(72);
+                        t.forward(dist*2);
+                        t.pop();
+                        
+                        t.left(90);
+                        next();
+                        for (int i = 0; i < 60; i++) {
+                            t.forward(dist);
+                            t.right(6);
+                        }
+                        //
+                        }
+
+
+                        void next() {
+                        t.penUp();
+                        t.right(180);
+                        t.forward(dist*4);
+                        t.left(90);
+                        t.penDown();
+                        }
+                    </pre>
+                </div>
                 <h3>Task 2</h3>
                 <p>I completed the code implementations and got the initSquare() method to be used with all of its normal functions</p>
                 <div class="side-by-side">
@@ -316,263 +423,413 @@
 
                 <h3>Task 3</h3>
                 <p>Here are the L-Systems I created</p>
+                <figure>
+                    <img src="../img/lsystems/fractal-tree.png" class="square">
+                    <figcaption>Here's a fractal tree I created, the function is <em>garbonzo()</em></figcaption>
+                </figure>
+                <div class="side-by-side">
                     <figure>
-                        <img src="../img/lsystems/fractal-tree.png" class="square">
-                        <figcaption>Here's a fractal tree I created, the function is <em>garbonzo()</em></figcaption>
+                        <img src="../img/lsystems/lemon.png" class="square">
+                        <figcaption>This has pentagonal symetry, the function is <em>lemon()</em></figcaption>
                     </figure>
-                    <div class="side-by-side">
-                        <figure>
-                            <img src="../img/lsystems/lemon.png" class="square">
-                            <figcaption>This has pentagonal symetry, the function is <em>lemon()</em></figcaption>
-                        </figure>
-                        <figure>
-                            <img src="../img/lsystems/lemonese.png" class="square">
-                            <figcaption>Another with pentagonal symetry, the function is <em>lemonese()</em></figcaption>
-                        </figure>
-                    </div>
-                    <div class="side-by-side">
-                        <figure>
-                            <img src="../img/lsystems/balloon.png" class="square">
-                            <figcaption>This uses 45 degree angle turns, I call it <em>balloon()</em></figcaption>
-                        </figure>
-                        <figure>
-                            <img src="../img/lsystems/peacock.png" class="square">
-                            <figcaption>This utilizes push and pop to make a tree, the function is <em>peacock()</em></figcaption>
-                        </figure>
-                    </div>
                     <figure>
-                        <img src="../img/lsystems/gosper.png" class="square">
-                        <figcaption>Here I made the gosper curve, I used gpt to retrieve the rules for this one <em>gosper()</em></figcaption>
+                        <img src="../img/lsystems/lemonese.png" class="square">
+                        <figcaption>Another with pentagonal symetry, the function is <em>lemonese()</em></figcaption>
                     </figure>
-                    <h4>Here is the code and outputs for these functions</h4>
-                    <button type="button" class="collapse">See Code</button>
-                    <div class="code-collapse hidden">
-                        <p><b>ExampleLSystemDesigns</b></p>
-                        <pre>
-                            // ExampleLSystemDesigns - contains helper methods to create and 
-                            // initialize an LSystem
-                            // to set up parameters and init the LSystem (from the main file)
+                </div>
+                <div class="side-by-side">
+                    <figure>
+                        <img src="../img/lsystems/balloon.png" class="square">
+                        <figcaption>This uses 45 degree angle turns, I call it <em>balloon()</em></figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/peacock.png" class="square">
+                        <figcaption>This utilizes push and pop to make a tree, the function is <em>peacock()</em></figcaption>
+                    </figure>
+                </div>
+                <figure>
+                    <img src="../img/lsystems/gosper.png" class="square">
+                    <figcaption>Here I made the gosper curve, I used gpt to retrieve the rules for this one <em>gosper()</em></figcaption>
+                </figure>
+                <h4>Here is the code and outputs for these functions</h4>
+                <button type="button" class="collapse">See Code</button>
+                <div class="code-collapse hidden">
+                    <p><b>ExampleLSystemDesigns</b></p>
+                    <pre>
+                        // ExampleLSystemDesigns - contains helper methods to create and 
+                        // initialize an LSystem
+                        // to set up parameters and init the LSystem (from the main file)
 
-                            import java.util.HashMap;
+                        import java.util.HashMap;
 
-                            // [TODO]: create your own L-System initialization methods
-                            // and use/test in the setup() method of L1LSystemAssignment file. 
-                            // See example for Square Lsystem below.
+                        // [TODO]: create your own L-System initialization methods
+                        // and use/test in the setup() method of L1LSystemAssignment file. 
+                        // See example for Square Lsystem below.
 
-                            // Square Lsystem initialization 
-                            // This method returns an Lsystem object that uses
-                            // The rules and axioms for a square based system
-                            LSystem initSquare() {
-                            // initialize turtle variables
-                            float moveDist = 10;
-                            float rotateAngle = 90;
-                            float scaleFactor = 1;
+                        // Square Lsystem initialization 
+                        // This method returns an Lsystem object that uses
+                        // The rules and axioms for a square based system
+                        LSystem initSquare() {
+                        // initialize turtle variables
+                        float moveDist = 10;
+                        float rotateAngle = 90;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "F+F+F+F";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "F+F-F-FF+F+F-F");
                             
-                            // The intial axiom / input string
-                            String axiom = "F+F+F+F";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "F+F-F-FF+F+F-F");
-                                
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem garbonzo() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 45;
-                            float scaleFactor = 1;
+                        LSystem garbonzo() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 45;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "L";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "FF");
+                        rules.put('L', "F[+L]-L");
                             
-                            // The intial axiom / input string
-                            String axiom = "L";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "FF");
-                            rules.put('L', "F[+L]-L");
-                                
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem peachPie() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 45;
-                            float scaleFactor = 1;
+                        LSystem peachPie() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 45;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "L";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "FF");
+                        rules.put('B', "BB");
+                        rules.put('L', "[F[+L]-L][B[+L]-L]");
                             
-                            // The intial axiom / input string
-                            String axiom = "L";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "FF");
-                            rules.put('B', "BB");
-                            rules.put('L', "[F[+L]-L][B[+L]-L]");
-                                
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem sierpinski() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 120;
-                            float scaleFactor = 1;
-                            
-                            // The intial axiom / input string
-                            String axiom = "F+F+F";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "F+F-F-F+F");
+                        LSystem sierpinski() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 120;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "F+F+F";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "F+F-F-F+F");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem lemon() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 72;
-                            float scaleFactor = 10;
-                            
-                            // The intial axiom / input string
-                            String axiom = "F-F-F-F-F";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "F+F-F-F+F");
+                        LSystem lemon() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 72;
+                        float scaleFactor = 10;
+                        
+                        // The intial axiom / input string
+                        String axiom = "F-F-F-F-F";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "F+F-F-F+F");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem lemonese() {
-                            // initialize turtle variables
-                            float moveDist = 50;
-                            float rotateAngle = 72;
-                            float scaleFactor = 5;
-                            
-                            // The intial axiom / input string
-                            String axiom = "[F]+[F]+[F]+[F]+[F]";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put(']', "-[F]+[F]+[F]]");
-                            rules.put('F', "FF");
+                        LSystem lemonese() {
+                        // initialize turtle variables
+                        float moveDist = 50;
+                        float rotateAngle = 72;
+                        float scaleFactor = 5;
+                        
+                        // The intial axiom / input string
+                        String axiom = "[F]+[F]+[F]+[F]+[F]";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put(']', "-[F]+[F]+[F]]");
+                        rules.put('F', "FF");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem balloon() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 45;
-                            float scaleFactor = 1;
-                            
-                            // The intial axiom / input string
-                            String axiom = "FF+F+FF+F+FF+F+FF+F+";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "-F+F");
+                        LSystem balloon() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 45;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "FF+F+FF+F+FF+F+FF+F+";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "-F+F");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem peacock() {
-                            // initialize turtle variables
-                            float moveDist = 50;
-                            float rotateAngle = 20;
-                            float scaleFactor = 0.3;
-                            
-                            // The intial axiom / input string
-                            String axiom = "F[+L]-L";
-                            
-                            // Create any production rules
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('L', "F[+L]-L");
+                        LSystem peacock() {
+                        // initialize turtle variables
+                        float moveDist = 50;
+                        float rotateAngle = 20;
+                        float scaleFactor = 0.3;
+                        
+                        // The intial axiom / input string
+                        String axiom = "F[+L]-L";
+                        
+                        // Create any production rules
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('L', "F[+L]-L");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
 
-                            LSystem gosper() {
-                            // initialize turtle variables
-                            float moveDist = 20;
-                            float rotateAngle = 60;
-                            float scaleFactor = 1;
-                            
-                            // The intial axiom / input string
-                            String axiom = "F";
-                            
-                            
-                            // GPT used to get rules
-                            //   Prompt: hexagonal gosper curve L System Rules
-                            //   Response: Axiom: A
-                            //             Angle: 60°
-                            //             Alphabet: variables A,B; constants +,-
-                            //             Turtle: draw forward on A or B; + = left 60°, - = right 60°
-                            
-                            //             Production rules:
-                            //             •  A → A+B++B-A--AA-B+
-                            //             •  B → -A+BB++B+A--A-B
+                        LSystem gosper() {
+                        // initialize turtle variables
+                        float moveDist = 20;
+                        float rotateAngle = 60;
+                        float scaleFactor = 1;
+                        
+                        // The intial axiom / input string
+                        String axiom = "F";
+                        
+                        
+                        // GPT used to get rules
+                        //   Prompt: hexagonal gosper curve L System Rules
+                        //   Response: Axiom: A
+                        //             Angle: 60°
+                        //             Alphabet: variables A,B; constants +,-
+                        //             Turtle: draw forward on A or B; + = left 60°, - = right 60°
+                        
+                        //             Production rules:
+                        //             •  A → A+B++B-A--AA-B+
+                        //             •  B → -A+BB++B+A--A-B
 
-                            HashMap<Character, String> rules = new HashMap<>();
-                            rules.put('F', "F+L++L-F--FF-L+");
-                            rules.put('L', "-F+LL++L+F--F-L");
+                        HashMap<Character, String> rules = new HashMap<>();
+                        rules.put('F', "F+L++L-F--FF-L+");
+                        rules.put('L', "-F+LL++L+F--F-L");
 
-                            // Create and return the Lsystem
-                            return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
-                            }
-                        </pre>
-                        <p><b>Outputs</b></p>
-                        <p>initSquare()</p>
-                        <p>
-                            Drawing L-System: n =  1 <br>
-                            n =  1  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F <br>
-                            Drawing L-System: n =  2 <br>
-                            n =  2  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F
-                            <br>Drawing L-System: n =  3
-                            <br>n =  3  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F
+                        // Create and return the Lsystem
+                        return new LSystem(axiom, rules, moveDist, rotateAngle, scaleFactor);
+                        }
+                    </pre>
+                    <p><b>Outputs</b></p>
+                    <p>initSquare()</p>
+                    <p>
+                        Drawing L-System: n =  1 <br>
+                        n =  1  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F <br>
+                        Drawing L-System: n =  2 <br>
+                        n =  2  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F
+                        <br>Drawing L-System: n =  3
+                        <br>n =  3  :  F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F-F+F-F-FF+F+F-FF+F-F-FF+F+F-F+F+F-F-FF+F+F-F+F+F-F-FF+F+F-F-F+F-F-FF+F+F-F
 
-                        </p>
-                        <p>garbonzo()</p>
-                        <p>
-                            Drawing L-System: n =  1 <br>
-                            n =  1  :  F[+L]-L <br>
-                            Drawing L-System: n =  2 <br>
-                            n =  2  :  FF[+F[+L]-L]-F[+L]-L <br>
-                            Drawing L-System: n =  3 <br>
-                            n =  3  :  FFFF[+FF[+F[+L]-L]-F[+L]-L]-FF[+F[+L]-L]-F[+L]-L
-                        </p>
-                        <p>peachPie()</p>
-                        <p>
-                            Drawing L-System: n =  1<br>
-                            n =  1  :  [F[+L]-L][B[+L]-L]<br>
-                            Drawing L-System: n =  2<br>
-                            n =  2  :  [FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]<br>
-                            Drawing L-System: n =  3<br>
-                            n =  3  :  [FFFF[+[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]-[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]][BBBB[+[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]-[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]
-                        </p>
-                        <p>lemon()</p>
-                        <p>
-                            Drawing L-System: n =  1<br>
-                            n =  1  :  F+F-F-F+F-F+F-F-F+F-F+F-F-F+F-F+F-F-F+F-F+F-F-F+F<br>
-                            Drawing L-System: n =  2<br>
-                            n =  2  :  F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F
-                            <br>Drawing L-System: n =  3
-                            <br>n =  3  :  F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F
-                            <br>Drawing L-System: n =  4
-                        </p>
-                    </div>
+                    </p>
+                    <p>garbonzo()</p>
+                    <p>
+                        Drawing L-System: n =  1 <br>
+                        n =  1  :  F[+L]-L <br>
+                        Drawing L-System: n =  2 <br>
+                        n =  2  :  FF[+F[+L]-L]-F[+L]-L <br>
+                        Drawing L-System: n =  3 <br>
+                        n =  3  :  FFFF[+FF[+F[+L]-L]-F[+L]-L]-FF[+F[+L]-L]-F[+L]-L
+                    </p>
+                    <p>peachPie()</p>
+                    <p>
+                        Drawing L-System: n =  1<br>
+                        n =  1  :  [F[+L]-L][B[+L]-L]<br>
+                        Drawing L-System: n =  2<br>
+                        n =  2  :  [FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]<br>
+                        Drawing L-System: n =  3<br>
+                        n =  3  :  [FFFF[+[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]-[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]][BBBB[+[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]-[FF[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]][BB[+[F[+L]-L][B[+L]-L]]-[F[+L]-L][B[+L]-L]]]
+                    </p>
+                    <p>lemon()</p>
+                    <p>
+                        Drawing L-System: n =  1<br>
+                        n =  1  :  F+F-F-F+F-F+F-F-F+F-F+F-F-F+F-F+F-F-F+F-F+F-F-F+F<br>
+                        Drawing L-System: n =  2<br>
+                        n =  2  :  F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F
+                        <br>Drawing L-System: n =  3
+                        <br>n =  3  :  F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F+F+F-F-F+F+F+F-F-F+F-F+F-F-F+F-F+F-F-F+F+F+F-F-F+F
+                        <br>Drawing L-System: n =  4
+                    </p>
+                </div>
                 <h3>Task 4</h3>
+                <p>Here are the designs I printed</p>
+                <div class="side-by-side">
+                    <figure>
+                        <img src="../img/lsystems/balloon.png" class="square">
+                        <figcaption>This uses 45 degree angle turns, I call it <em>balloon()</em></figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/peacock.png" class="square">
+                        <figcaption>This utilizes push and pop to make a tree, the function is <em>peacock()</em></figcaption>
+                    </figure>
+                </div>
+                <h3>Probabilistic LSystem</h3>
+                <p>I used a string array to store multiple options for each rule, I then gave an equal chance to each option. Options can be weighted by including them multiple times in the list.</p>
+                <p>Check out these spindley guys</p>
+                <div class="side-by-side">
+                    <figure>
+                        <img src="../img/lsystems/spindler1.png" class="square">
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/spindler2.png" class="square">
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/spindler3.png" class="square">
+                    </figure>
+                    <figure>
+                        <img src="../img/lsystems/spindler4.png" class="square">
+                    </figure>
+                </div>
+                <h4>The probability code for the spindles:</h4>
+                <button type="button" class="collapse">See Code</button>
+                <div class="code-collapse hidden">
+                    <pre>
+                        // This is an implementation of an L-System that extends the class 
+                        // "BaseLSystem", which makes it easy to make new types of LSystems (e.g., probabalistic)
+                        // without repeating lots of code.
+                        // It assumes all input vocabulary not given a rule are constants. 
+                        // Though you could give an explicit rule for a constant using "F" --> "F"
+                        // It contains a StringBuffer (currentIterationBuffer) that should be used
+                        // to handle production rules when computing the currentIteration string as part of iterate
+                        // in order avoid wasteful creation of strings and memory problems.
+                        // The StringBuffer is used in the iterate method of the LSystem.
+                        // @author: @mriveralee
+                        import java.util.HashMap;
 
+                        class ProbabilisticLSystem extends BaseLSystem {
+                        
+                        // Production rules
+                        private HashMap<Character, String[]> rules;
+
+                        // Constructor for making an Lsystem object
+                        public ProbabilisticLSystem(String axiom, HashMap<Character, String[]> rules, 
+                            float moveDistance, float rotateAngle, float scaleFactor) {            
+                            
+                            // Call Super Class constructor to initialize variables
+                            // You must always call this.
+                            super(axiom, moveDistance, rotateAngle, scaleFactor);
+                            
+                            // Set the Rules
+                            this.rules = rules;
+                            
+                            // Reset the state
+                            this.reset();
+                        }
+                        
+                        // runs 1 iteration, performing the rules for each character
+                        // on the current string. The result of the replacement is added to the currentIterationBuffer.
+                        public void iterate() {
+                            // get a copy of the current iteration string
+                            String current = this.getIterationString();
+                            
+                            // Now clear the current interation string
+                            this.clearCurrentStringBuffer();
+                            
+                            // [TODO]: Implement the procedure for using the rules to replace characters in the current string, 
+                            // and append them them to the currentIterationBuffer
+                            for (int i = 0; i < current.length(); i++) {
+                                Character cur = current.charAt(i);
+                                String nextArray[] = rules.get(cur);
+                                String next;
+                                if (nextArray == null) {
+                                next = cur.toString();
+                                } else {
+                                //each entry has an equal chance of being selected
+                                int index = constrain((int)random(0,nextArray.length), 0, nextArray.length-1);
+                                next = nextArray[index];
+                                }
+                                super.currentIterationBuffer.append(next);
+                            }
+                        
+                            // Increment our iteration after we are done
+                            iterationNum += 1;
+                        }
+                        
+                        // This function uses the turtle to draw based on each character in the LSystem's 
+                        // iteration string. It also handles scaling the moveDistance (to keep the image in frame), if desired
+                        public void drawLSystem(Turtle t) {
+                            // Our turtle's move distance
+                            float dist = this.moveDistance;
+                            float angle = this.rotateAngle;
+                            
+                            // Scale the movement, if necessary, to help keep the image in frame 
+                            // when it gets too big
+                            if (scaleFactor != 0) {
+                            // Get the current iteration number for scaling 
+                            int iterationNum = this.getIterationNum();
+                            dist = dist / (scaleFactor * (iterationNum + 1));
+                            }
+                            
+                            // Get the current iteration string
+                            String currentIteration = this.getIterationString(); 
+                            
+                            // [TODO]: Loop through each character in the iteration string,
+                            // and do turtle operations based on the character
+                            for (int i = 0; i < currentIteration.length(); i++) {
+                            Character c = currentIteration.charAt(i); 
+                            // [TODO]: Implement different l-system vocabulary
+                            switch (c) {
+                                case 'F':
+                                t.forward(dist);
+                                break; // The "break" exits out of the switch statement and prevents the next cases from running
+                                case 'L':
+                                t.forward(dist);
+                                break;
+                                case 'B':
+                                t.back(dist);
+                                break;
+                                case '+':
+                                t.left(angle);
+                                break;
+                                case '-':
+                                t.right(angle);
+                                break;
+                                case '[':
+                                t.push();
+                                break;
+                                case ']':
+                                t.pop();
+                                break;
+                                case ' ':
+                                // do nothing
+                                break;
+                                default:
+                                // Throw an error if we don't have a draw operation implemented 
+                                throw new IllegalArgumentException("Missing a drawing operation case for character: " + c.toString());  
+                            }
+                            }
+                        }
+                        }
+                    </pre>
+                </div>
+            
             </article>
 
             <article>
