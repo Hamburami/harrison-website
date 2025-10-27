@@ -22,10 +22,179 @@
         <main>
             <article>
                 <h2>A Seat at the Table</h2>
-                <figure>
-                        <img src="../img/furniture/bubble-table.jpg" style="width: auto; height: 400px; border: none;">
-                        <figcaption>The Table</figcaption>
+                <figure class="side-by-side">
+                        <figure>
+                            <img src="../img/furniture/bubble-table.jpg" style="width: auto; height: 400px; border: none;">
+                            <figcaption>The Table</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="../img/furniture/chair1red.jpg" style="width: auto; height: 400px; border: none;">
+                            <figcaption>The Chair</figcaption>
+                        </figure>
                 </figure>
+                <figure class="side-by-side">
+                        <figure>
+                            <img src="../img/furniture/chair1.jpg" style="width: auto; height: 400px; border: none;">
+                            <figcaption>More Chairs</figcaption>
+                        </figure>
+                        <figure>
+                            <img src="../img/furniture/chair2.jpg" style="width: auto; height: 400px; border: none;">
+                            <figcaption>Laid Back</figcaption>
+                        </figure>
+                </figure>
+
+                <h3>Grasshopper Flow</h3>
+                 <a href="../img/furniture/furniture-flow.png" download="furniture-flow.jpg">
+                    <img src="../img/furniture/furniture-flow.png" width="100%" alt="An overview of every grasshopper component and connection for a parameterized furniture modeler.">
+                </a>
+                <p>click to download</p>
+                <p>Here is the code to the C# component seen above</p>
+                <button type="button" class="collapse">See Code</button>
+                <div class="code-collapse hidden" style="width : 1000px;">
+                    <pre>
+                        // Grasshopper Script Instance
+                        #region Usings
+                        using System;
+                        using System.Linq;
+                        using System.Collections;
+                        using System.Collections.Generic;
+                        using System.Drawing;
+
+                        using Rhino;
+                        using Rhino.Geometry;
+
+                        using Grasshopper;
+                        using Grasshopper.Kernel;
+                        using Grasshopper.Kernel.Data;
+                        using Grasshopper.Kernel.Types;
+                        #endregion
+
+                        public class Script_Instance : GH_ScriptInstance
+                        {
+
+
+                            private void RunScript(
+                                List<Point3d> fourPtLine,
+                                double height,
+                                double curveNum,
+                                double depth,
+                                double seatCruveNum,
+                                double lip,
+                                double dip,
+                                double backHeight,
+                                double backSkew,
+                                double buttPull,
+                                ref object ret,
+                                ref object leg,
+                                ref object seat,
+                                ref object seatSide,
+                                ref object topSide)
+                            {
+                                List<Point3d> modified = new List<Point3d>();
+                                List<Point3d> seatPts = new List<Point3d>();
+                                for (int i = 0; i < fourPtLine.Count; i++) {
+                                    Point3d ptCopy = fourPtLine.ElementAt(i);
+                                    Point3d ctrlPt = ptCopy;
+                                    if (i == 1 || i == 2) {
+                                        ptCopy.Z += height;
+                                        ctrlPt.X += (i%2==0 ? curveNum : -curveNum);
+                                        ctrlPt.Z += height;
+                                        if (i == 1) {
+                                            modified.Add(ctrlPt);
+                                        }
+                                        seatPts.Add(ctrlPt);
+                                    }
+                                    modified.Add(ptCopy);
+                                    if (i == 2) {
+                                        modified.Add(ctrlPt);
+                                    }
+                                }
+
+
+                                for (int j = 0; j < 4; j++) {
+                                    double curHeight = 0;
+                                    if (j==3) curHeight = -lip;
+                                    if (j==0) curHeight = -dip;
+                                    for (int i = 0; i < 2; i++) {
+                                        seatPts.Add(seatPts.ElementAt(i) + 
+                                        new Vector3d(0, (depth-2*seatCruveNum+(j==0 ? curHeight : 0)) + 
+                                        j*seatCruveNum, curHeight));
+                                    }
+                                }
+
+                                //Seperate points into parralell lines
+                                List<Point3d> side = new List<Point3d>();
+                                double sideX = seatPts.ElementAt(0).X;
+                                for (int i = 0; i < seatPts.Count; i++) {
+                                    if (seatPts.ElementAt(i).X != sideX) {
+                                        side.Add(seatPts.ElementAt(i));
+                                        seatPts.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+
+                                side.Reverse();
+                                seatPts.AddRange(side);
+
+                                //Adding Chair Back
+                                seatPts.Add(seatPts.ElementAt(seatPts.Count-1) + new Vector3d(0, -backSkew, backHeight));
+                                seatPts.Insert(0, seatPts.ElementAt(0) + new Vector3d(0, -backSkew, backHeight));
+
+                                // Pull Back corner points but 
+                                Point3d bc1 = seatPts.ElementAt(1);
+                                Point3d bc2 = seatPts.ElementAt(seatPts.Count-2);
+
+                                double downPull = 0.5;
+                                bc1 += new Vector3d(0, -buttPull, -buttPull*downPull);
+                                bc2 += new Vector3d(0, -buttPull, -buttPull*downPull);
+                                
+                                seatPts[1] = bc1;
+                                seatPts[seatPts.Count-2] = bc2; 
+
+                                // Adding top of back
+                                Point3d top1 = seatPts.ElementAt(0);
+                                Point3d top2 = seatPts.ElementAt(seatPts.Count-1);
+                                top1 += new Vector3d(3, 0, 3);
+                                top2 += new Vector3d(-3, 0, 3);
+                                seatPts.Add(top2);
+                                seatPts.Insert(0, top1);
+
+                                Point3d top3 = seatPts.ElementAt(0);
+                                Point3d top4 = seatPts.ElementAt(seatPts.Count-1);
+                                top3 += new Vector3d(6, 0, 0);
+                                top4 += new Vector3d(-6, 0, 0);
+                                seatPts.Add(top4);
+                                seatPts.Insert(0, top3);
+
+                                seatPts.Add(seatPts[0]);
+
+                                side.Add(seatPts[seatPts.Count -5]);
+                                side.Add(seatPts[seatPts.Count -4]);
+                                //side.Add(seatPts[seatPts.Count -3]);
+
+                                List<Point3d> top = new List<Point3d>{
+                                    seatPts[2], seatPts[1], seatPts[0], 
+                                    seatPts[seatPts.Count-2], seatPts[seatPts.Count-3], seatPts[seatPts.Count-4]};
+
+                                seatSide = side;
+                                topSide = top;
+                                ret = modified;
+                                seat = seatPts;
+                            }
+
+
+                        }
+
+                    </pre>
+                </div>
+
+                <h3>The Print</h3>
+                <figure>
+                    <img src="../img/furniture/table-and-chair.jpeg" style="height: 800px; width: auto; margin-top: 30px;">
+                    <figcaption>The models printed alright, if they were biggere there would be more fidelity. Also the legs on the chair were too thin.</figcaption>
+                </figure>
+                <p></p>
+
             </article>
             <article>
                 <h2>3D Slicer</h2>
