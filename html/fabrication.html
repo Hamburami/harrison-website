@@ -21,6 +21,109 @@
 
         <main>
             <article>
+                <h2>Final Project</h2>
+                <p>I started this project with a goal: To create a musical box that can play distinct pitches. With procedural building parameters in Grasshopper, that enable customizations of dimensions, pitches and functionality. The box will should be playable by a person and should have the ability to sound relatively musical.</p>
+                <p>I spent a lot of time iterating on different design options and learned a lot about what works well and what doesn't, especially with regards to 3D printing, resonance and ergonomics. I started by considering all my options, from woodwinds to drums. Eventually I committed to a tine based music maker. Tines are beams of material that resonate at a specific pitch relative to the length, (width and height), and density of the beam. Tines are used in windable music boxes, electric pianos and also Kalimbas and Mbiras.</p>
+                <figure>
+                    <img src="../img/final/initial-ideas.jpeg" style="width: 400px; height: auto; border: none;">
+                    <figcaption>Initial Sketches exploring different designs</figcaption>
+                </figure>
+                <figure class="side-by-side">
+                    <figure>
+                        <img src="https://mbira.org/wp-content/uploads/2015/05/mbira.org-Chiyanike-nyamaropa-300x300.jpg" style="width: 400px; height: auto; border: none;">
+                        <figcaption>A <a href="https://mbira.org/what-is-mbira/mbira-music/the-mbira-instrument/" target="_blank">Mbira</a></figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/final/music-box.png">
+                        <figcaption>A traditional winding music box</figcaption>
+                    </figure>
+                </figure>
+
+                <p>I learned I could control the pitch of the tines by using this formula</p>
+                <p>F∝1/L²</p>
+                <p>Where F is the frequency and L is the length of the tine. I then calculated the length of the tine given a pitch by rewriting the formula accordingly.</p>
+                <p>L∝1/√F</p>
+                <p>
+                    An octave is any frequency x2 or /2, for example if our base frequency is 400hz, an octave above this would be 800hz. 
+                    <br>
+                    Most music uses a 12 tone equal tempered scale, to implement this we need to find 11 proportionally spaced frequencies between 400hz and 800hz. 
+                    <br>
+                    We can do this like so, <br>
+                    1 note above base:  400 * 2^(1/12) = 423.8<br>
+                    2 notes above base: 400 * 2^(2/12) = 449.0 <br>
+                    …<br>
+                    11 notes above base: 400 * 2^(11/12) = 755.1<br>
+                    Octave above base: 400 * 2^(12/12) = 800
+                </p>
+                <p>I implemented this math in grasshopper and used a slider for the minimum length of a tine</p>
+                <figure class="side-by-side">
+                    <figure>
+                        <img src="../img/final/first-design-side.png" style="width: 400px; height: auto; border: none;">
+                        <figcaption>My first design made using Grasshopper (Side view)</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/final/first-design-top.png" style="width: 400px; height: auto; border: none;">
+                        <figcaption>(Top view)</a></figcaption>
+                    </figure>
+                </figure>
+                <p>I drafted and printed many different test dimensions</p>
+                <figure>
+                    <img src="../img/final/printing-spiral.jpeg" style="height: 400px; width: auto;">
+                    <figcaption>Printing with a spiral infill pattern. This peice had tines that were much too small, rigid and high pitched.</figcaption>
+                </figure>
+                <p>To test the designs, I used a very cheap contact microphone to amplify the vibrations of the tines. I also experimented with added effects like reverb and delay which would extend some of the frequencies produced by the music box.</p>
+                <figure>
+                    <img src="../img/final/initial-tests.jpeg" style="height: 600px; width: auto;">
+                    <figcaption>I tested the designs and took note on what played well and what didn't.</figcaption>
+                </figure>
+                <figure>
+                    <img src="../img/final/key-design.png" style="height: 400px; width: auto;">
+                    <figcaption>I attempted a design that would hit the tines using a key mechanism. However, this did not prove useful.</figcaption>
+                </figure>
+                <figure>
+                    <img src="../img/final/iterations.jpeg" style="height: 600px; width: auto; transform: rotate(-90deg);">
+                    <figcaption>Many of the iterations I printed</figcaption>
+                </figure>
+                <p>My final design is very reminiscent of a Mbira but with influences from the layout of a concert keyboard. I seperated the "black keys" onto a seperate layer with a recessed base so they can sit behind the white keys while maintaining the same pitch.</p>
+                 <figure class="side-by-side">
+                    <figure>
+                        <img src="../img/final/final-design-side.png" style="width: 400px; height: auto; border: none;">
+                        <figcaption>Final Design (Side view)</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/final/final-design-top.png" style="width: 400px; height: auto; border: none;">
+                        <figcaption>(Top view)</a></figcaption>
+                    </figure>
+                </figure>
+                <figure>
+                    <img src ="../img/final/final-design-side-seperated.png" style="height: 400px; width: auto;">
+                    <figcaption>The design has 3 layers, with each one sloting nesting into the next.</figcaption>
+                </figure>
+                <figure class="side-by-side">
+                    <figure>
+                        <img src="../img/final/final-design-disassembled.jpeg" style="width: 400px; height: auto; border: none;">
+                        <figcaption>Final Print - Top View</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../img/final/final-design-assembled.jpeg" style="width: 400px; height: auto; border: none;">
+                        <figcaption>Final Print - Side View</figcaption>
+                    </figure>
+                </figure>
+                <p>Here is a video of me playing around with the final design</p>
+                <video width="800" height="auto" controls>
+                    <source src="../img/final/demo.MOV" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p>And here is my grasshopper code which creates everything shown above. The customizable parameters are all on the far left of the canvas.</p>
+                 <a href="../img/final/music-box-gh-flow.png" download="music-box-gh-flow.png">
+                    <img src="../img/final/music-box-gh-flow.png" width="100%" alt="An overview of every grasshopper component and connection for a parameterized music box modeler.">
+                </a>
+                <p>click the image above to download</p>
+                <h3>Reflection</h3>
+                <p>I beleive I met the goals that I set out to achieve. I had a lot of fun itterating on this design and I have since come up with a lot of ideas for improvements and future projects. Firstly I would like to try to have the form of the object be even more reminiscent of a standard keyboard, with wider keys and evenly spaced white keys. I'd also love to see how big I could scale it, I imagine I could have each octave be a module that you could connect next to eachother inorder to create a keyboard that spans many octaves. It would also be fun to try to implement a set of notes that plays a fixed melody when played in a row.</p>
+                <p>I am very glad to have worked on this project in this class! I have learned so much this semester and I'm super excited to continue learning about computational fabrication beyond this class. My experience in this class has given me many skills and insights that I hope to grow and use for the rest of my life!</p>
+            </article>
+            <article>
                 <h2>G-code Slicer</h2>
                 <h3>Slicing a single and multi layer cylinder</h3>
                 <p>I started by creating a test cylinder and drew intersecting lines according to the extrusion width and layer height</p>
@@ -259,7 +362,7 @@
                 <h3>The Print</h3>
                 <figure>
                     <img src="../img/furniture/table-and-chair.jpeg" style="height: 800px; width: auto; margin-top: 30px;">
-                    <figcaption>The models printed alright, if they were biggere there would be more fidelity. Also the legs on the chair were too thin.</figcaption>
+                    <figcaption>The models printed alright, if they were bigger there would be more fidelity. Also the legs on the chair were too thin.</figcaption>
                 </figure>
                 <p></p>
 
